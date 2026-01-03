@@ -22,14 +22,22 @@ import { CreateUserUseCase } from './application/use-cases/admin/create-user.use
 import { DeleteUserUseCase } from './application/use-cases/admin/delete-user.use-case';
 import { GetUsersQueryHandler } from './application/queries/get-users.query';
 import { UsersQueryRepository } from './infastructure/users-query.repository';
+import { SecurityDevicesController } from './api/security-devices.controller';
+import { GetDevicesQueryHandler } from './application/queries/get-devices.query';
+import { SessionsService } from './application/sessions.service';
+import { SessionsQueryRepository } from './infastructure/sessions-query.repository';
+import { TerminateOtherDevicesUseCase } from './application/use-cases/security/terminate-other-devices.use-case';
+import { TerminateDeviceUseCase } from './application/use-cases/security/terminate-device.use-case';
 
 const useCases = [
     LoginUseCase,
     RegistrationUseCase,
     CreateUserUseCase,
     DeleteUserUseCase,
+    TerminateOtherDevicesUseCase,
+    TerminateDeviceUseCase,
 ];
-const queries = [GetUsersQueryHandler];
+const queries = [GetUsersQueryHandler, GetDevicesQueryHandler];
 
 @Module({
     imports: [
@@ -47,7 +55,7 @@ const queries = [GetUsersQueryHandler];
             }),
         }),
     ],
-    controllers: [AuthController, SaUsersController],
+    controllers: [AuthController, SaUsersController, SecurityDevicesController],
     providers: [
         CryptoService,
         JwtStrategy,
@@ -56,10 +64,11 @@ const queries = [GetUsersQueryHandler];
         ...queries,
 
         AuthService,
-        // SessionsService,
+
+        SessionsService,
         SessionsRepository,
-        // SessionsQueryRepository,
-        //
+        SessionsQueryRepository,
+
         UsersService,
         UsersRepository,
         UsersQueryRepository,

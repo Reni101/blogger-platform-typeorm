@@ -40,7 +40,7 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
             userId,
             deviceName,
             ip,
-            deviceId: v4(),
+            deviceId,
             iat,
             exp,
         });

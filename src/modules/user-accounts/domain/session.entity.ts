@@ -22,10 +22,10 @@ export class Session {
     ip: string;
 
     @Column({ type: 'bigint' })
-    iat: number;
+    iat: string;
 
     @Column({ type: 'bigint' })
-    exp: number;
+    exp: string;
 
     @CreateDateColumn()
     createdAt: Date;
