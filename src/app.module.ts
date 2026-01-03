@@ -8,6 +8,7 @@ import { DomainHttpExceptionsFilter } from './core/exceptions/filters/domain-exc
 import { TestingModule } from './modules/testing/testing.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountsModule } from './modules/user-accounts/user-accounts.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
         }),
 
         TestingModule,
+        NotificationsModule,
         UserAccountsModule,
     ],
     controllers: [],
@@ -40,5 +42,6 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
             useClass: DomainHttpExceptionsFilter,
         },
     ],
+    exports: [NotificationsModule],
 })
 export class AppModule {}

@@ -54,4 +54,8 @@ export class User {
 
     @OneToMany(() => Session, (sessions) => sessions.user) // note: we will create author property in the Photo class below
     sessions: Session[];
+
+    async softDelete() {
+        this.deletedAt = new Date();
+    }
 }

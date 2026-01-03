@@ -14,15 +14,26 @@ import { UsersRepository } from './infastructure/users.repository';
 import { AuthController } from './api/auth.controller';
 import { RegistrationUseCase } from './application/use-cases/auth/registration.use-case';
 import { UsersService } from './application/users.service';
-import { NotificationsModule } from '../notifications/notifications.module';
 import { Session } from './domain/session.entity';
 import { SessionsRepository } from './infastructure/sessions.repository';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { SaUsersController } from './api/sa.users.controller';
+import { CreateUserUseCase } from './application/use-cases/admin/create-user.use-case';
+import { DeleteUserUseCase } from './application/use-cases/admin/delete-user.use-case';
+import { GetUsersQueryHandler } from './application/queries/get-users.query';
+import { UsersQueryRepository } from './infastructure/users-query.repository';
 
-const useCases = [LoginUseCase, RegistrationUseCase];
-const queries = [];
+const useCases = [
+    LoginUseCase,
+    RegistrationUseCase,
+    CreateUserUseCase,
+    DeleteUserUseCase,
+];
+const queries = [GetUsersQueryHandler];
 
 @Module({
     imports: [
+        NotificationsModule,
         TypeOrmModule.forFeature([User, EmailConfirmation, Session]),
         JwtModule.registerAsync({
             inject: [ConfigService],
@@ -35,14 +46,14 @@ const queries = [];
                 },
             }),
         }),
-        NotificationsModule,
     ],
-    controllers: [AuthController],
+    controllers: [AuthController, SaUsersController],
     providers: [
         CryptoService,
         JwtStrategy,
         LocalStrategy,
         ...useCases,
+        ...queries,
 
         AuthService,
         // SessionsService,
@@ -51,7 +62,7 @@ const queries = [];
         //
         UsersService,
         UsersRepository,
-        // UsersQueryRepository,
+        UsersQueryRepository,
     ],
     exports: [],
 })

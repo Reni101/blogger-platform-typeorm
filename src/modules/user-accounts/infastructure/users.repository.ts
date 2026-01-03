@@ -47,6 +47,11 @@ export class UsersRepository {
             confirmationCode: v4(),
         });
         await this.usersRepository.save(user);
+
         return user;
+    }
+
+    async save(user: User) {
+        return this.usersRepository.save(user);
     }
 }
