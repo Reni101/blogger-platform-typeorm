@@ -13,15 +13,14 @@ export class UsersQueryRepository {
 
     async getUsers(query: GetUsersQueryParams) {
         const queryBuilder = this.usersRepository
-            .createQueryBuilder()
+            .createQueryBuilder('u')
             .select(['u.id', 'u.login', 'u.email', 'u.createdAt'])
-            .from(User, 'u')
+            .limit(query.pageSize)
+            .offset(query.calculateSkip())
             .orderBy(
                 `u.${query.sortBy}`,
                 query.sortDirection === SortDirection.Asc ? 'ASC' : 'DESC',
-            )
-            .limit(query.pageSize)
-            .offset(query.calculateSkip());
+            );
 
         if (query.searchLoginTerm) {
             queryBuilder.orWhere('u.login ILIKE :login', {
@@ -33,6 +32,13 @@ export class UsersQueryRepository {
                 email: `%${query.searchEmailTerm}%`,
             });
         }
+
         return queryBuilder.getManyAndCount();
+    }
+    getUserById(id: number) {
+        return this.usersRepository.findOne({
+            select: { id: true, email: true, login: true },
+            where: { id },
+        });
     }
 }

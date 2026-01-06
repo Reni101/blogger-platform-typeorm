@@ -24,6 +24,6 @@ export class AuthService {
             return null;
         }
 
-        return { id: 1, login: 'login' };
+        return { id: user.id };
     }
 }

@@ -28,6 +28,14 @@ import { SessionsService } from './application/sessions.service';
 import { SessionsQueryRepository } from './infastructure/sessions-query.repository';
 import { TerminateOtherDevicesUseCase } from './application/use-cases/security/terminate-other-devices.use-case';
 import { TerminateDeviceUseCase } from './application/use-cases/security/terminate-device.use-case';
+import { LogoutUseCase } from './application/use-cases/auth/logout.use-case';
+import { RegistrationConfirmationUseCase } from './application/use-cases/auth/registration-confirmation.use-case';
+import { EmailConfirmationRepository } from './infastructure/email-confirmation.repository';
+import { RegistrationEmailResendingUseCase } from './application/use-cases/auth/registration-email-resending.use-case';
+import { PasswordRecoveryUseCase } from './application/use-cases/auth/password-recovery.use-case';
+import { NewPasswordUseCase } from './application/use-cases/auth/new-password.use-case';
+import { RefreshTokenUseCase } from './application/use-cases/auth/refresh-token.use-case';
+import { GetUserQueryHandler } from './application/queries/get-user.query';
 
 const useCases = [
     LoginUseCase,
@@ -36,8 +44,18 @@ const useCases = [
     DeleteUserUseCase,
     TerminateOtherDevicesUseCase,
     TerminateDeviceUseCase,
+    LogoutUseCase,
+    RegistrationConfirmationUseCase,
+    RegistrationEmailResendingUseCase,
+    PasswordRecoveryUseCase,
+    NewPasswordUseCase,
+    RefreshTokenUseCase,
 ];
-const queries = [GetUsersQueryHandler, GetDevicesQueryHandler];
+const queries = [
+    GetUsersQueryHandler,
+    GetDevicesQueryHandler,
+    GetUserQueryHandler,
+];
 
 @Module({
     imports: [
@@ -72,6 +90,8 @@ const queries = [GetUsersQueryHandler, GetDevicesQueryHandler];
         UsersService,
         UsersRepository,
         UsersQueryRepository,
+
+        EmailConfirmationRepository,
     ],
     exports: [],
 })

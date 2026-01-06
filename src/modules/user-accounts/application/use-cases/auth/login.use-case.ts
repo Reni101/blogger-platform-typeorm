@@ -35,7 +35,6 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
         );
         const { iat, exp } =
             this.jwtService.decode<RefreshTokenPayload>(refreshToken);
-
         await this.sessionsRepository.createSession({
             userId,
             deviceName,

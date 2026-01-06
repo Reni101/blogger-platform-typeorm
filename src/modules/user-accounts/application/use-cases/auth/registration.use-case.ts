@@ -25,14 +25,16 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
         const passwordHash =
             await this.cryptoService.createPasswordHash(password);
 
-        const user = await this.usersRepository.createUser({
+        const user = await this.usersRepository.registerUser({
             login,
             email,
             passwordHash,
         });
-
         this.emailService
-            .sendConfirmationEmail(user.email, user.confirmationCode)
+            .sendConfirmationEmail(
+                user.email,
+                user.emailConfirmation.confirmationCode,
+            )
             .catch(console.error);
     }
 }

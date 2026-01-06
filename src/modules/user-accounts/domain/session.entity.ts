@@ -12,7 +12,7 @@ export class Session {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'uuid' })
+    @Column({ type: 'varchar' })
     deviceId: string;
 
     @Column({ type: 'varchar' })

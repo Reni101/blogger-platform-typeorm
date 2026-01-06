@@ -6,6 +6,7 @@ import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-c
 import { DomainException } from '../../../core/exceptions/domain-exceptions';
 import { CreateUserDomainDto } from '../domain/dto/create-user.domain.dto';
 import { v4 } from 'uuid';
+import { add } from 'date-fns';
 
 @Injectable()
 export class UsersRepository {
@@ -44,13 +45,60 @@ export class UsersRepository {
             login: dto.login,
             email: dto.email,
             passwordHash: dto.passwordHash,
-            confirmationCode: v4(),
         });
         await this.usersRepository.save(user);
 
         return user;
     }
+    async registerUser(dto: CreateUserDomainDto) {
+        const user = this.usersRepository.create({
+            login: dto.login,
+            email: dto.email,
+            passwordHash: dto.passwordHash,
+            emailConfirmation: {
+                confirmationCode: v4(),
+                expirationDate: add(new Date(), {
+                    days: 1,
+                }),
+                isConfirmed: false,
+            },
+        });
+        await this.usersRepository.save(user);
 
+        return user;
+    }
+    async findByEmailOrThrow(email: string) {
+        const user = await this.usersRepository.findOne({
+            relations: { emailConfirmation: true },
+            where: { email },
+        });
+
+        if (!user) {
+            throw new DomainException({
+                code: DomainExceptionCode.BadRequest,
+                message: 'email not found',
+                extensions: [{ message: 'email doesnt exist', field: 'email' }],
+            });
+        }
+        return user;
+    }
+    async findByRecoveryCodeOrThrow(recoveryCode: string) {
+        const user = await this.usersRepository.findOneBy({ recoveryCode });
+
+        if (!user) {
+            throw new DomainException({
+                code: DomainExceptionCode.BadRequest,
+                message: 'users not found',
+                extensions: [
+                    {
+                        message: 'RecoveryCode doesnt exist',
+                        field: 'recoveryCode',
+                    },
+                ],
+            });
+        }
+        return user;
+    }
     async save(user: User) {
         return this.usersRepository.save(user);
     }

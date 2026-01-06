@@ -43,7 +43,7 @@ export class SessionsRepository {
         });
         if (!session) {
             throw new DomainException({
-                code: DomainExceptionCode.Unauthorized,
+                code: DomainExceptionCode.NotFound,
                 message: 'session not found',
             });
         }
@@ -60,5 +60,8 @@ export class SessionsRepository {
             .where('userId = :userId', { userId: dto.userId })
             .andWhere('id !=:id', { id: dto.sessionId })
             .execute();
+    }
+    async save(session: Session) {
+        await this.sessionsRepository.save(session);
     }
 }

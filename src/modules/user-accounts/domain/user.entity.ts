@@ -28,17 +28,21 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'varchar', length: loginConstraints.maxLength })
+    @Column({
+        type: 'varchar',
+        length: loginConstraints.maxLength,
+        collation: 'C',
+    })
     login: string;
 
-    @Column({ type: 'varchar' })
+    @Column({ type: 'varchar', collation: 'C' })
     email: string;
 
     @Column({ type: 'varchar' })
     passwordHash: string;
 
-    @Column({ type: 'uuid' })
-    confirmationCode: string;
+    @Column({ type: 'uuid', nullable: true })
+    recoveryCode: string;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -49,10 +53,11 @@ export class User {
     @OneToOne(
         () => EmailConfirmation,
         (emailConfirmation) => emailConfirmation.user,
+        { cascade: true },
     )
     emailConfirmation: EmailConfirmation;
 
-    @OneToMany(() => Session, (sessions) => sessions.user) // note: we will create author property in the Photo class below
+    @OneToMany(() => Session, (sessions) => sessions.user)
     sessions: Session[];
 
     async softDelete() {
