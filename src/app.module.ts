@@ -9,6 +9,7 @@ import { TestingModule } from './modules/testing/testing.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountsModule } from './modules/user-accounts/user-accounts.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.module';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
         TestingModule,
         NotificationsModule,
         UserAccountsModule,
+        BlogPlatformModule,
     ],
     controllers: [],
     providers: [
