@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Post,
+    Put,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { BlogViewDto, PaginatedBlogsViewDto } from './view-dto/blogs.view-dto';
 import { ApiSecurity } from '@nestjs/swagger';
@@ -7,6 +19,9 @@ import { CreateBlogInputDto } from './input-dto/blog/create-blog.input-dto';
 import { CreateBlogCommand } from '../aplication/use-cases/create-blog.use-case';
 import { GetBlogsQueryParams } from './input-dto/blog/get-blogs-query-params.input-dto';
 import { BlogsQueryRepository } from '../infrastructure/blogs-query.repository';
+import { UpdateBlogInputDto } from './input-dto/blog/update-blog.input-dto';
+import { UpdateBlogCommand } from '../aplication/use-cases/update-blog.use-case';
+import { DeleteBlogCommand } from '../aplication/use-cases/delete-blog.use-case';
 
 @ApiSecurity('basic')
 @Controller('sa/blogs')
@@ -30,25 +45,25 @@ export class SaBlogsController {
             new CreateBlogCommand(dto),
         );
     }
-    // @Put(':id')
-    // @HttpCode(HttpStatus.NO_CONTENT)
-    // async updateBlog(
-    //     @Param('id') blogId: number,
-    //     @Body() dto: UpdateBlogInputDto,
-    // ) {
-    //     return this.commandBus.execute<UpdateBlogCommand, void>(
-    //         new UpdateBlogCommand(dto, +blogId),
-    //     );
-    // }
-    //
-    // @Delete(':id')
-    // @HttpCode(HttpStatus.NO_CONTENT)
-    // async deleteBlog(@Param('id') blogId: number) {
-    //     return this.commandBus.execute<DeleteBlogCommand, void>(
-    //         new DeleteBlogCommand(blogId),
-    //     );
-    // }
-    //
+    @Put(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async updateBlog(
+        @Param('id') blogId: number,
+        @Body() dto: UpdateBlogInputDto,
+    ) {
+        return this.commandBus.execute<UpdateBlogCommand, void>(
+            new UpdateBlogCommand(dto, +blogId),
+        );
+    }
+
+    @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async deleteBlog(@Param('id') blogId: number) {
+        return this.commandBus.execute<DeleteBlogCommand, void>(
+            new DeleteBlogCommand(blogId),
+        );
+    }
+
     // @Get(':id/posts')
     // async getPostsByBlogId(
     //     @Query() query: GetPostsQueryParams,

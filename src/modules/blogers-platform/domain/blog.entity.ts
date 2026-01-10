@@ -1,7 +1,6 @@
 import {
     Column,
     CreateDateColumn,
-    DeleteDateColumn,
     Entity,
     PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -37,7 +36,4 @@ export class Blog {
 
     @CreateDateColumn()
     createdAt: Date;
-
-    @DeleteDateColumn()
-    deletedAt: Date | null;
 }

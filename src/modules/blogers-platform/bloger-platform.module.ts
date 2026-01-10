@@ -5,11 +5,13 @@ import { BlogsRepository } from './infrastructure/blogs.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Blog } from './domain/blog.entity';
 import { BlogsQueryRepository } from './infrastructure/blogs-query.repository';
+import { UpdateBlogUseCase } from './aplication/use-cases/update-blog.use-case';
+import { DeleteBlogUseCase } from './aplication/use-cases/delete-blog.use-case';
 
 const useCases = [
     CreateBlogUseCase,
-    // UpdateBlogUseCase,
-    // DeleteBlogUseCase,
+    UpdateBlogUseCase,
+    DeleteBlogUseCase,
     // CreatePostUseCase,
     // UpdatePostUseCase,
     // DeletePostUseCase,
