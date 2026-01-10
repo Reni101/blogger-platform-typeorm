@@ -17,12 +17,12 @@ export class TestingController {
         await this.dataSource.query(
             'TRUNCATE TABLE "email_confirmation" RESTART IDENTITY CASCADE;',
         );
-        // await this.dataSource.query(
-        //     'TRUNCATE TABLE "Posts" RESTART IDENTITY CASCADE;',
-        // );
-        // await this.dataSource.query(
-        //     'TRUNCATE TABLE "Blogs" RESTART IDENTITY CASCADE;',
-        // );
+        await this.dataSource.query(
+            'TRUNCATE TABLE "posts" RESTART IDENTITY CASCADE;',
+        );
+        await this.dataSource.query(
+            'TRUNCATE TABLE "blogs" RESTART IDENTITY CASCADE;',
+        );
         // await this.dataSource.query(
         //     'TRUNCATE TABLE "Comments" RESTART IDENTITY CASCADE;',
         // );

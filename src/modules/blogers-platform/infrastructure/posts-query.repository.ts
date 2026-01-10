@@ -9,6 +9,7 @@ import { PostViewDto } from '../api/view-dto/posts.view-dto';
 import { SortDirection } from '../../../core/dto/base.query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { PostSortBy } from '../api/input-dto/post/posts-sort-by';
+import { LikeStatusEnum } from '../domain/const/LikeStatusEnum';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -16,7 +17,7 @@ export class PostsQueryRepository {
         @InjectRepository(Post) private postsRepository: Repository<Post>,
     ) {}
 
-    async getByIdOrThrow(id: number) {
+    async getByIdOrThrow(dto: { postId: number; userId?: number }) {
         const post = await this.postsRepository.findOne({
             select: {
                 blog: { name: true },
@@ -28,7 +29,7 @@ export class PostsQueryRepository {
                 createdAt: true,
             },
             relations: { blog: true },
-            where: { id },
+            where: { id: dto.postId },
         });
 
         if (!post) {
@@ -37,7 +38,21 @@ export class PostsQueryRepository {
                 message: 'post not found',
             });
         }
-        return post;
+        return {
+            id: post.id.toString(),
+            blogId: post.blogId.toString(),
+            blogName: post.blog.name,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            extendedLikesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: LikeStatusEnum.None,
+                newestLikes: [],
+            },
+            title: post.title,
+            createdAt: post.createdAt,
+        };
     }
 
     async getPosts(

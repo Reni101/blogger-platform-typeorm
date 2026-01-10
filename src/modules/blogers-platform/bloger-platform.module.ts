@@ -14,6 +14,7 @@ import { PostsQueryRepository } from './infrastructure/posts-query.repository';
 import { UpdatePostUseCase } from './aplication/use-cases/update-post.use-case';
 import { DeletePostUseCase } from './aplication/use-cases/delete-post.use-case';
 import { BlogsController } from './api/blogs.controller';
+import { PostsController } from './api/posts.controller';
 
 const useCases = [
     CreateBlogUseCase,
@@ -36,7 +37,7 @@ const useCases = [
     controllers: [
         SaBlogsController,
         BlogsController,
-        // PostsController,
+        PostsController,
         // CommentsController,
     ],
     providers: [
