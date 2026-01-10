@@ -13,6 +13,7 @@ import { PostsRepository } from './infrastructure/posts.repository';
 import { PostsQueryRepository } from './infrastructure/posts-query.repository';
 import { UpdatePostUseCase } from './aplication/use-cases/update-post.use-case';
 import { DeletePostUseCase } from './aplication/use-cases/delete-post.use-case';
+import { BlogsController } from './api/blogs.controller';
 
 const useCases = [
     CreateBlogUseCase,
@@ -34,7 +35,7 @@ const useCases = [
     imports: [TypeOrmModule.forFeature([Blog, Post])],
     controllers: [
         SaBlogsController,
-        // BlogsController,
+        BlogsController,
         // PostsController,
         // CommentsController,
     ],

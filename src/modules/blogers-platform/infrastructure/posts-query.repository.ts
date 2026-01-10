@@ -40,7 +40,10 @@ export class PostsQueryRepository {
         return post;
     }
 
-    async getPosts(query: GetPostsQueryParams, blogId?: number) {
+    async getPosts(
+        query: GetPostsQueryParams,
+        dto: { blogId?: number; userId?: number },
+    ) {
         const sortField =
             query.sortBy === PostSortBy.BlogName
                 ? 'b.name'
@@ -64,8 +67,8 @@ export class PostsQueryRepository {
             .limit(query.pageSize)
             .offset(query.calculateSkip())
             .orderBy(sortField, sortDirection);
-        if (blogId) {
-            queryBuilder.andWhere('p.blogId = :id', { id: blogId });
+        if (dto.blogId) {
+            queryBuilder.andWhere('p.blogId = :id', { id: dto.blogId });
         }
         const posts = await queryBuilder.getRawMany();
 

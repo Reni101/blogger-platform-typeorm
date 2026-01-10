@@ -9,6 +9,8 @@ import {
 } from '../api/view-dto/blogs.view-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { SortDirection } from '../../../core/dto/base.query-params.input-dto';
+import { DomainException } from '../../../core/exceptions/domain-exceptions';
+import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 
 @Injectable()
 export class BlogsQueryRepository {
@@ -48,5 +50,23 @@ export class BlogsQueryRepository {
             page: query.pageNumber,
             size: query.pageSize,
         });
+    }
+
+    async getByIdOrThrow(id: number): Promise<BlogViewDto> {
+        const blog = await this.blogsRepository.findOneBy({ id });
+        if (!blog) {
+            throw new DomainException({
+                code: DomainExceptionCode.NotFound,
+                message: 'blog not found',
+            });
+        }
+        return {
+            id: blog.id.toString(),
+            name: blog.name,
+            isMembership: blog.isMembership,
+            createdAt: blog.createdAt,
+            websiteUrl: blog.websiteUrl,
+            description: blog.description,
+        };
     }
 }

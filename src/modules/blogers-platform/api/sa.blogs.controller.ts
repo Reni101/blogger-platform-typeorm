@@ -88,7 +88,7 @@ export class SaBlogsController {
         @Query() query: GetPostsQueryParams,
         @Param('id') blogId: number,
     ) {
-        return this.postsQueryRepository.getPosts(query, blogId);
+        return this.postsQueryRepository.getPosts(query, { blogId });
     }
 
     @Put(':blogId/posts/:postId')
