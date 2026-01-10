@@ -2,8 +2,10 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Post } from './post.entity';
 
 export const nameConstraints = {
     minLength: 1,
@@ -36,4 +38,7 @@ export class Blog {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @OneToMany(() => Post, (p) => p.blog)
+    posts: Post[];
 }

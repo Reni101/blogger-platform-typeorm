@@ -1,7 +1,7 @@
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-interface IBlog {
+interface IRawBlog {
     b_id: number;
     b_name: string;
     b_description: string;
@@ -18,7 +18,7 @@ export class BlogViewDto {
     createdAt: Date;
     isMembership: boolean;
 
-    static mapToView(blog: IBlog): BlogViewDto {
+    static mapToView(blog: IRawBlog): BlogViewDto {
         const dto = new BlogViewDto();
         dto.id = blog.b_id.toString();
         dto.name = blog.b_name;

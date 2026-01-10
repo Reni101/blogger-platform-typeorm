@@ -2,7 +2,17 @@ import { LikeStatusEnum } from '../../domain/const/LikeStatusEnum';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class extendedLikesInfo {
+interface IRawPost {
+    b_name: string;
+    p_blogId: number;
+    p_content: string;
+    p_createdAt: Date;
+    p_id: number;
+    p_shortDescription: string;
+    p_title: string;
+}
+
+export class ExtendedLikesInfo {
     likesCount: number;
     dislikesCount: number;
     myStatus: LikeStatusEnum;
@@ -21,25 +31,22 @@ export class PostViewDto {
     blogId: string;
     blogName: string;
     createdAt: Date;
-    extendedLikesInfo: extendedLikesInfo;
+    extendedLikesInfo: ExtendedLikesInfo;
 
-    static mapToView(post: any): PostViewDto {
+    static mapToView(post: IRawPost): PostViewDto {
         const dto = new PostViewDto();
-        dto.id = post.id.toString();
-        dto.title = post.title;
-        dto.shortDescription = post.shortDescription;
-        dto.content = post.content;
-        dto.createdAt = post.createdAt;
-        dto.blogId = post.blogId.toString();
-        dto.blogName = post.blogName;
+        dto.id = post.p_id.toString();
+        dto.title = post.p_title;
+        dto.shortDescription = post.p_shortDescription;
+        dto.content = post.p_content;
+        dto.createdAt = post.p_createdAt;
+        dto.blogId = post.p_blogId.toString();
+        dto.blogName = post.b_name;
         dto.extendedLikesInfo = {
-            likesCount: post.extendedLikesInfo.likesCount,
-            dislikesCount: post.extendedLikesInfo.dislikesCount,
-            myStatus: post.extendedLikesInfo.myStatus,
-            newestLikes: post.extendedLikesInfo.newestLikes.map((l) => ({
-                ...l,
-                userId: l.userId.toString(),
-            })),
+            likesCount: 0,
+            dislikesCount: 0,
+            myStatus: LikeStatusEnum.None,
+            newestLikes: [],
         };
         return dto;
     }

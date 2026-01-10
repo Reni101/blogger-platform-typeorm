@@ -7,14 +7,21 @@ import { Blog } from './domain/blog.entity';
 import { BlogsQueryRepository } from './infrastructure/blogs-query.repository';
 import { UpdateBlogUseCase } from './aplication/use-cases/update-blog.use-case';
 import { DeleteBlogUseCase } from './aplication/use-cases/delete-blog.use-case';
+import { Post } from './domain/post.entity';
+import { CreatePostUseCase } from './aplication/use-cases/create-post.use-case';
+import { PostsRepository } from './infrastructure/posts.repository';
+import { PostsQueryRepository } from './infrastructure/posts-query.repository';
+import { UpdatePostUseCase } from './aplication/use-cases/update-post.use-case';
+import { DeletePostUseCase } from './aplication/use-cases/delete-post.use-case';
 
 const useCases = [
     CreateBlogUseCase,
     UpdateBlogUseCase,
     DeleteBlogUseCase,
-    // CreatePostUseCase,
-    // UpdatePostUseCase,
-    // DeletePostUseCase,
+    CreatePostUseCase,
+    UpdatePostUseCase,
+    DeletePostUseCase,
+
     // CreateCommentUseCase,
     // UpdateCommentUseCase,
     // DeleteCommentUseCase,
@@ -24,7 +31,7 @@ const useCases = [
 ];
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Blog])],
+    imports: [TypeOrmModule.forFeature([Blog, Post])],
     controllers: [
         SaBlogsController,
         // BlogsController,
@@ -36,9 +43,9 @@ const useCases = [
 
         BlogsRepository,
         BlogsQueryRepository,
-        //
-        // PostsQueryRepository,
-        // PostsRepository,
+
+        PostsRepository,
+        PostsQueryRepository,
         //
         // CommentsQueryRepository,
         // CommentsRepository,
