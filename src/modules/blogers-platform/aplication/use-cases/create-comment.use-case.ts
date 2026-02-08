@@ -4,7 +4,6 @@ import { PostsRepository } from '../../infrastructure/posts.repository';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
 import { CommentViewDto } from '../../api/view-dto/comment.view-dto';
 import { CommentsQueryRepository } from '../../infrastructure/comments-query.repository';
-import { LikeStatusEnum } from '../../domain/const/LikeStatusEnum';
 
 export class CreateCommentCommand {
     constructor(public dto: CreateCommentDto) {}
@@ -22,21 +21,6 @@ export class CreateCommentUseCase implements ICommandHandler<CreateCommentComman
         await this.postsRepository.findByIdOrThrow(dto.postId);
 
         const commentId = await this.commentsRepository.createComment(dto);
-        const comment = await this.commentsQueryRepository.findById(commentId);
-
-        return {
-            id: comment.id.toString(),
-            createdAt: comment.createdAt,
-            commentatorInfo: {
-                userId: comment.user.id.toString(),
-                userLogin: comment.user.login,
-            },
-            content: comment.content,
-            likesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: LikeStatusEnum.Like,
-            },
-        };
+        return this.commentsQueryRepository.findById(commentId);
     }
 }

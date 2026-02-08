@@ -3,10 +3,12 @@ import {
     CreateDateColumn,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Post } from './post.entity';
 import { User } from '../../user-accounts/domain/user.entity';
+import { CommentReaction } from './comment-reaction.entity';
 
 export const contentConstraints = {
     minLength: 20,
@@ -32,4 +34,7 @@ export class Comment {
     user: User;
     @Column()
     userId: number;
+
+    @OneToMany(() => CommentReaction, (CR) => CR.comment)
+    commentsReactions: CommentReaction[];
 }

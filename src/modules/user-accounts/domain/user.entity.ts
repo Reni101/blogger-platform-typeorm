@@ -10,6 +10,7 @@ import {
 import { EmailConfirmation } from './email-confirmation.entity';
 import { Session } from './session.entity';
 import { Comment } from '../../blogers-platform/domain/comment.entity';
+import { CommentReaction } from '../../blogers-platform/domain/comment-reaction.entity';
 
 export const loginConstraints = {
     minLength: 3,
@@ -63,6 +64,9 @@ export class User {
 
     @OneToMany(() => Session, (sessions) => sessions.user)
     comments: Comment[];
+
+    @OneToMany(() => CommentReaction, (CR) => CR.user)
+    commentsReactions: CommentReaction[];
 
     async softDelete() {
         this.deletedAt = new Date();

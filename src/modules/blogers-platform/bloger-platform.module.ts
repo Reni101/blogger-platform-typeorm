@@ -20,6 +20,11 @@ import { CommentsController } from './api/comments.controller';
 import { CreateCommentUseCase } from './aplication/use-cases/create-comment.use-case';
 import { CommentsRepository } from './infrastructure/comments.repository';
 import { CommentsQueryRepository } from './infrastructure/comments-query.repository';
+import { UpdateCommentUseCase } from './aplication/use-cases/update-comment.use-case';
+import { CommentReaction } from './domain/comment-reaction.entity';
+import { ToggleLikeCommentUseCase } from './aplication/use-cases/toggle-like-comment.use-case';
+import { DeleteCommentUseCase } from './aplication/use-cases/delete-comment.use-case';
+import { CommentsReactionsRepository } from './infrastructure/comments-reactions.repository';
 
 const useCases = [
     CreateBlogUseCase,
@@ -30,15 +35,15 @@ const useCases = [
     DeletePostUseCase,
 
     CreateCommentUseCase,
-    // UpdateCommentUseCase,
-    // DeleteCommentUseCase,
+    UpdateCommentUseCase,
+    DeleteCommentUseCase,
     //
-    // ToggleLikeCommentUseCase,
+    ToggleLikeCommentUseCase,
     // ToggleLikePostsUseCase,
 ];
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Blog, Post, Comment])],
+    imports: [TypeOrmModule.forFeature([Blog, Post, Comment, CommentReaction])],
     controllers: [
         SaBlogsController,
         BlogsController,
@@ -56,8 +61,8 @@ const useCases = [
 
         CommentsRepository,
         CommentsQueryRepository,
-        //
-        // CommentsReactionsRepository,
+
+        CommentsReactionsRepository,
         // PostsReactionsRepository,
     ],
 })

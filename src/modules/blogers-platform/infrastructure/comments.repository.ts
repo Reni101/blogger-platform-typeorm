@@ -23,12 +23,12 @@ export class CommentsRepository {
         return comment.id;
     }
 
-    async findById(id: number, postId: number) {
-        return this.commentsRepository.findOne({ where: { id, postId } });
+    async findById(id: number) {
+        return this.commentsRepository.findOne({ where: { id } });
     }
 
-    async findByIdOrThrow(id: number, postId: number) {
-        const blog = await this.findById(id, postId);
+    async findByIdOrThrow(id) {
+        const blog = await this.findById(id);
         if (!blog) {
             throw new DomainException({
                 code: DomainExceptionCode.NotFound,
