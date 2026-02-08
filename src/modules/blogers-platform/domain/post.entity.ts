@@ -8,6 +8,8 @@ import {
 } from 'typeorm';
 import { Blog } from './blog.entity';
 import { Comment } from './comment.entity';
+import { CommentReaction } from './comment-reaction.entity';
+import { PostReaction } from './post-reaction.entity';
 
 export const titleConstraints = {
     minLength: 1,
@@ -50,4 +52,7 @@ export class Post {
 
     @OneToMany(() => Comment, (c) => c.post)
     comments: Comment[];
+
+    @OneToMany(() => CommentReaction, (pr) => pr.user)
+    postsReactions: PostReaction[];
 }

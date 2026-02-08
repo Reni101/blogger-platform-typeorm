@@ -19,12 +19,15 @@ import { ExtractUserFromRequest } from '../../user-accounts/guards/decorators/ex
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../aplication/use-cases/create-comment.use-case';
 import { CommentViewDto } from './view-dto/comment.view-dto';
+import { GetCommentsQueryParams } from './input-dto/comments/get-comments-query-params.input-dto';
+import { CommentsQueryRepository } from '../infrastructure/comments-query.repository';
 
 @Controller('posts')
 export class PostsController {
     constructor(
         private commandBus: CommandBus,
         private postsQueryRepository: PostsQueryRepository,
+        private commentsQueryRepository: CommentsQueryRepository,
     ) {}
 
     @ApiBearerAuth()
@@ -88,17 +91,18 @@ export class PostsController {
         );
     }
 
-    // @ApiBearerAuth()
-    // @Get(':postId/comments')
-    // @UseGuards(JwtOptionalAuthGuard)
-    // async getCommentsByPostId(
-    //     @Query() query: GetCommentsQueryParams,
-    //     @Param('postId') postId: number,
-    //     @ExtractUserIfExistsFromRequest() user: UserContextDto | null,
-    // ) {
-    //     return this.queryBus.execute<
-    //         GetCommentsQuery,
-    //         PaginatedCommentsViewDto
-    //     >(new GetCommentsQuery({ postId, userId: user?.id, query }));
-    // }
+    @ApiBearerAuth()
+    @Get(':postId/comments')
+    @UseGuards(JwtOptionalAuthGuard)
+    async getCommentsByPostId(
+        @Query() query: GetCommentsQueryParams,
+        @Param('postId') postId: number,
+        @ExtractUserIfExistsFromRequest() user: UserContextDto | null,
+    ) {
+        return this.commentsQueryRepository.getComments({
+            query,
+            postId,
+            userId: user?.id,
+        });
+    }
 }
