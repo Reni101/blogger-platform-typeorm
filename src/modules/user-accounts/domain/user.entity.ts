@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { EmailConfirmation } from './email-confirmation.entity';
 import { Session } from './session.entity';
+import { Comment } from '../../blogers-platform/domain/comment.entity';
 
 export const loginConstraints = {
     minLength: 3,
@@ -59,6 +60,9 @@ export class User {
 
     @OneToMany(() => Session, (sessions) => sessions.user)
     sessions: Session[];
+
+    @OneToMany(() => Session, (sessions) => sessions.user)
+    comments: Comment[];
 
     async softDelete() {
         this.deletedAt = new Date();

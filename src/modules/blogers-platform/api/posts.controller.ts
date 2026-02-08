@@ -1,14 +1,31 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Param,
+    Post,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { GetPostsQueryParams } from './input-dto/post/get-posts-query-params.input-dto';
 import { JwtOptionalAuthGuard } from '../../user-accounts/guards/bearer/jwt-optional-auth.guard';
 import { UserContextDto } from '../../user-accounts/guards/dto/user-context.dto';
 import { ExtractUserIfExistsFromRequest } from '../../user-accounts/guards/decorators/extract-user-if-exists-from-request.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { PostsQueryRepository } from '../infrastructure/posts-query.repository';
+import { JwtAuthGuard } from '../../user-accounts/guards/bearer/jwt-auth.guard';
+import { CommentInputDto } from './input-dto/comments/comment.input-dto';
+import { ExtractUserFromRequest } from '../../user-accounts/guards/decorators/extract-user-from-request.decorator';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateCommentCommand } from '../aplication/use-cases/create-comment.use-case';
+import { CommentViewDto } from './view-dto/comment.view-dto';
 
 @Controller('posts')
 export class PostsController {
-    constructor(private postsQueryRepository: PostsQueryRepository) {}
+    constructor(
+        private commandBus: CommandBus,
+        private postsQueryRepository: PostsQueryRepository,
+    ) {}
 
     @ApiBearerAuth()
     @Get()
@@ -50,26 +67,26 @@ export class PostsController {
     //     );
     // }
     //
-    // // comments
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
-    // @Post(':postId/comments')
-    // async createComment(
-    //     @Param('postId') postId: number,
-    //     @Body() dto: CommentInputDto,
-    //     @ExtractUserFromRequest() user: UserContextDto,
-    // ) {
-    //     return await this.commandBus.execute<
-    //         CreateCommentCommand,
-    //         CommentViewDto
-    //     >(
-    //         new CreateCommentCommand({
-    //             postId,
-    //             content: dto.content,
-    //             commentatorUserId: user.id,
-    //         }),
-    //     );
-    // }
+    // comments
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Post(':postId/comments')
+    async createComment(
+        @Param('postId') postId: number,
+        @Body() dto: CommentInputDto,
+        @ExtractUserFromRequest() user: UserContextDto,
+    ) {
+        return await this.commandBus.execute<
+            CreateCommentCommand,
+            CommentViewDto
+        >(
+            new CreateCommentCommand({
+                postId,
+                content: dto.content,
+                userId: user.id,
+            }),
+        );
+    }
     //
     // @ApiBearerAuth()
     // @Get(':postId/comments')

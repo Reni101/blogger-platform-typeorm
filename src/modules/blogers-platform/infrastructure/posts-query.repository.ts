@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Post } from '../domain/post.entity';
 import { DomainException } from '../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 import { GetPostsQueryParams } from '../api/input-dto/post/get-posts-query-params.input-dto';
-import { PostViewDto } from '../api/view-dto/posts.view-dto';
+import { IRawPost, PostViewDto } from '../api/view-dto/posts.view-dto';
 import { SortDirection } from '../../../core/dto/base.query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { PostSortBy } from '../api/input-dto/post/posts-sort-by';
@@ -15,6 +15,7 @@ import { LikeStatusEnum } from '../domain/const/LikeStatusEnum';
 export class PostsQueryRepository {
     constructor(
         @InjectRepository(Post) private postsRepository: Repository<Post>,
+        @InjectDataSource() private dataSource: DataSource,
     ) {}
 
     async getByIdOrThrow(dto: { postId: number; userId?: number }) {
@@ -85,7 +86,8 @@ export class PostsQueryRepository {
         if (dto.blogId) {
             queryBuilder.andWhere('p.blogId = :id', { id: dto.blogId });
         }
-        const posts = await queryBuilder.getRawMany();
+
+        const posts = await queryBuilder.getRawMany<IRawPost>();
 
         const total = await queryBuilder.getCount();
 

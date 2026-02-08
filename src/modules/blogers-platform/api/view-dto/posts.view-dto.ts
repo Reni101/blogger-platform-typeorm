@@ -2,7 +2,7 @@ import { LikeStatusEnum } from '../../domain/const/LikeStatusEnum';
 import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-interface IRawPost {
+export interface IRawPost {
     b_name: string;
     p_blogId: number;
     p_content: string;

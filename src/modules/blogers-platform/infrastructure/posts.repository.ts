@@ -22,12 +22,12 @@ export class PostsRepository {
         return post;
     }
 
-    async findById(postId: number, blogId: number) {
-        return this.postsRepository.findOne({ where: { id: postId, blogId } });
+    async findById(postId: number) {
+        return this.postsRepository.findOne({ where: { id: postId } });
     }
 
-    async findByIdOrThrow(postId: number, blogId: number) {
-        const post = await this.findById(postId, blogId);
+    async findByIdOrThrow(postId: number) {
+        const post = await this.findById(postId);
         if (!post) {
             throw new DomainException({
                 code: DomainExceptionCode.NotFound,

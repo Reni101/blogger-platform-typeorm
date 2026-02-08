@@ -3,9 +3,11 @@ import {
     CreateDateColumn,
     Entity,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Blog } from './blog.entity';
+import { Comment } from './comment.entity';
 
 export const titleConstraints = {
     minLength: 1,
@@ -45,4 +47,7 @@ export class Post {
 
     @Column()
     blogId: number;
+
+    @OneToMany(() => Comment, (c) => c.post)
+    comments: Comment[];
 }
