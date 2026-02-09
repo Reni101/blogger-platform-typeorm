@@ -2,8 +2,11 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
+    HttpStatus,
     Param,
     Post,
+    Put,
     Query,
     UseGuards,
 } from '@nestjs/common';
@@ -21,6 +24,8 @@ import { CreateCommentCommand } from '../aplication/use-cases/create-comment.use
 import { CommentViewDto } from './view-dto/comment.view-dto';
 import { GetCommentsQueryParams } from './input-dto/comments/get-comments-query-params.input-dto';
 import { CommentsQueryRepository } from '../infrastructure/comments-query.repository';
+import { likeStatusInputDto } from './input-dto/likeStatus.input-dto';
+import { ToggleLikePostsCommand } from '../aplication/use-cases/toggle-like-posts.use-case';
 
 @Controller('posts')
 export class PostsController {
@@ -52,24 +57,24 @@ export class PostsController {
         });
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // @ApiBearerAuth()
-    // @HttpCode(HttpStatus.NO_CONTENT)
-    // @Put(':postId/like-status')
-    // async likeStatus(
-    //     @Param('postId') postId: number,
-    //     @Body() body: likeStatusInputDto,
-    //     @ExtractUserFromRequest() user: UserContextDto,
-    // ) {
-    //     return this.commandBus.execute<ToggleLikePostsCommand, void>(
-    //         new ToggleLikePostsCommand({
-    //             status: body.likeStatus,
-    //             postId: postId,
-    //             userId: user.id,
-    //         }),
-    //     );
-    // }
-    //
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @Put(':postId/like-status')
+    async likeStatus(
+        @Param('postId') postId: number,
+        @Body() body: likeStatusInputDto,
+        @ExtractUserFromRequest() user: UserContextDto,
+    ) {
+        return this.commandBus.execute<ToggleLikePostsCommand, void>(
+            new ToggleLikePostsCommand({
+                status: body.likeStatus,
+                postId: postId,
+                userId: user.id,
+            }),
+        );
+    }
+
     // comments
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()

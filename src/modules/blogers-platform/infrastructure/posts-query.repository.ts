@@ -9,7 +9,6 @@ import { IRawPost, PostViewDto } from '../api/view-dto/posts.view-dto';
 import { SortDirection } from '../../../core/dto/base.query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { PostSortBy } from '../api/input-dto/post/posts-sort-by';
-import { LikeStatusEnum } from '../domain/const/LikeStatusEnum';
 
 @Injectable()
 export class PostsQueryRepository {
@@ -19,19 +18,69 @@ export class PostsQueryRepository {
     ) {}
 
     async getByIdOrThrow(dto: { postId: number; userId?: number }) {
-        const post = await this.postsRepository.findOne({
-            select: {
-                blog: { name: true },
-                id: true,
-                shortDescription: true,
-                blogId: true,
-                title: true,
-                content: true,
-                createdAt: true,
-            },
-            relations: { blog: true },
-            where: { id: dto.postId },
-        });
+        const postReactionCTE = this.dataSource
+            .createQueryBuilder()
+            .select([
+                'pr."postId"',
+                'COUNT(*) FILTER (WHERE pr.status = \'Like\')   AS "likesCount"',
+                'COUNT(*) FILTER (WHERE pr.status = \'Dislike\') AS "dislikesCount"',
+                ` (
+            SELECT jsonb_agg(
+                jsonb_build_object(
+                    'addedAt', sub."createdAt",
+                    'login', u.login,
+                    'userId', u.id
+                ) ORDER BY sub."createdAt" DESC
+            )
+            FROM (
+                SELECT pr2."createdAt", pr2."userId"
+                FROM "post_reaction" pr2
+                WHERE pr2."postId" = $1
+                  AND pr2.status = 'Like'
+                ORDER BY pr2."createdAt" DESC
+                LIMIT 3
+            ) sub
+            LEFT JOIN "users" u ON u.id = sub."userId"
+                ) AS newest_likes`,
+            ])
+            .from('post_reaction', 'pr')
+            .where('pr."postId" = :postId', { postId: dto.postId })
+            .groupBy('pr."postId"');
+
+        const userReactionCTE = this.dataSource
+            .createQueryBuilder()
+            .select(['"postId"', 'status'])
+            .from('post_reaction', 'pr')
+            .where('pr."userId" = :userId AND pr."postId" =:postId', {
+                userId: dto.userId ?? null,
+                postId: dto.postId,
+            });
+
+        const postQb = this.postsRepository
+            .createQueryBuilder('p')
+            .select([
+                'p.id as id',
+                'p.title as title',
+                'p."shortDescription" as "shortDescription"',
+                'p.content as content',
+                'p."blogId" as "blogId"',
+                'b.name as "blogName"',
+                'p."createdAt" as "createdAt"',
+                `jsonb_build_object(
+                     'likesCount',    COALESCE(pr."likesCount", 0)::int,
+                     'dislikesCount', COALESCE(pr."dislikesCount", 0)::int,
+                     'myStatus',      COALESCE(ur.status, 'None'),
+                     'newestLikes',   COALESCE(pr.newest_likes, '[]'::jsonb)
+                                 ) AS "extendedLikesInfo"`,
+            ])
+            .leftJoin('p.blog', 'b')
+            .addCommonTableExpression(postReactionCTE, 'pr')
+            .addCommonTableExpression(userReactionCTE, 'ur')
+            .leftJoin('pr', 'pr', 'pr."postId" = p.id')
+            .leftJoin('ur', 'ur', 'ur."postId" = p.id')
+            .where('p.id = :id', { id: dto.postId });
+
+        const post = await postQb.getRawOne<PostViewDto>();
 
         if (!post) {
             throw new DomainException({
@@ -39,21 +88,7 @@ export class PostsQueryRepository {
                 message: 'post not found',
             });
         }
-        return {
-            id: post.id.toString(),
-            blogId: post.blogId.toString(),
-            blogName: post.blog.name,
-            shortDescription: post.shortDescription,
-            content: post.content,
-            extendedLikesInfo: {
-                likesCount: 0,
-                dislikesCount: 0,
-                myStatus: LikeStatusEnum.None,
-                newestLikes: [],
-            },
-            title: post.title,
-            createdAt: post.createdAt,
-        };
+        return post;
     }
 
     async getPosts(

@@ -20,7 +20,7 @@ export class CommentsQueryRepository {
         @InjectDataSource() private dataSource: DataSource,
     ) {}
 
-    async getComment(id: number, userId?: number) {
+    async getByIdOrThrow(id: number, userId?: number) {
         const likesInfo = this.dataSource
             .createQueryBuilder()
             .select([
@@ -72,7 +72,7 @@ export class CommentsQueryRepository {
         const sortDirection =
             dto.query.sortDirection === SortDirection.Asc ? 'ASC' : 'DESC';
 
-        const likesInfo = this.dataSource
+        const likesInfoCTE = this.dataSource
             .createQueryBuilder()
             .select([
                 'cr."commentId"',
@@ -99,7 +99,7 @@ export class CommentsQueryRepository {
                     ) AS "likesInfo"`,
             ])
             .where('c."postId" = :postId')
-            .addCommonTableExpression(likesInfo, 'li')
+            .addCommonTableExpression(likesInfoCTE, 'li')
             .leftJoin('c.user', 'u')
             .leftJoin('li', 'li', 'li."commentId" = c.id')
             .setParameters({ postId: dto.postId, userId: dto?.userId ?? null })

@@ -26,6 +26,8 @@ import { ToggleLikeCommentUseCase } from './aplication/use-cases/toggle-like-com
 import { DeleteCommentUseCase } from './aplication/use-cases/delete-comment.use-case';
 import { CommentsReactionsRepository } from './infrastructure/comments-reactions.repository';
 import { PostReaction } from './domain/post-reaction.entity';
+import { ToggleLikePostsUseCase } from './aplication/use-cases/toggle-like-posts.use-case';
+import { PostsReactionsRepository } from './infrastructure/posts-reactions.repository';
 
 const useCases = [
     CreateBlogUseCase,
@@ -38,9 +40,9 @@ const useCases = [
     CreateCommentUseCase,
     UpdateCommentUseCase,
     DeleteCommentUseCase,
-    //
+
     ToggleLikeCommentUseCase,
-    // ToggleLikePostsUseCase,
+    ToggleLikePostsUseCase,
 ];
 
 @Module({
@@ -72,7 +74,7 @@ const useCases = [
         CommentsQueryRepository,
 
         CommentsReactionsRepository,
-        // PostsReactionsRepository,
+        PostsReactionsRepository,
     ],
 })
 export class BlogPlatformModule {}

@@ -40,7 +40,7 @@ export class CommentsController {
         @Param('commentId') commentId: number,
         @ExtractUserIfExistsFromRequest() user: UserContextDto | null,
     ): Promise<CommentViewDto> {
-        return this.commentsQueryRepository.getComment(commentId, user?.id);
+        return this.commentsQueryRepository.getByIdOrThrow(commentId, user?.id);
     }
 
     @ApiBearerAuth()
