@@ -34,6 +34,7 @@ export class BlogsController {
         @Query() query: GetPostsQueryParams,
         @ExtractUserIfExistsFromRequest() user: UserContextDto | null,
     ) {
+        await this.blogsQueryRepository.getByIdOrThrow(blogId);
         return this.postsQueryRepository.getPosts(query, {
             blogId,
             userId: user?.id,

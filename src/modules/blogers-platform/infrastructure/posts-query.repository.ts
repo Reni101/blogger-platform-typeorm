@@ -5,7 +5,7 @@ import { Post } from '../domain/post.entity';
 import { DomainException } from '../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 import { GetPostsQueryParams } from '../api/input-dto/post/get-posts-query-params.input-dto';
-import { IRawPost, PostViewDto } from '../api/view-dto/posts.view-dto';
+import { PostViewDto } from '../api/view-dto/posts.view-dto';
 import { SortDirection } from '../../../core/dto/base.query-params.input-dto';
 import { PaginatedViewDto } from '../../../core/dto/base.paginated.view-dto';
 import { PostSortBy } from '../api/input-dto/post/posts-sort-by';
@@ -29,7 +29,7 @@ export class PostsQueryRepository {
                 jsonb_build_object(
                     'addedAt', sub."createdAt",
                     'login', u.login,
-                    'userId', u.id
+                    'userId', u.id ::TEXT
                 ) ORDER BY sub."createdAt" DESC
             )
             FROM (
@@ -59,11 +59,11 @@ export class PostsQueryRepository {
         const postQb = this.postsRepository
             .createQueryBuilder('p')
             .select([
-                'p.id as id',
+                'p.id::TEXT as id',
                 'p.title as title',
                 'p."shortDescription" as "shortDescription"',
                 'p.content as content',
-                'p."blogId" as "blogId"',
+                'p."blogId"::TEXT as "blogId"',
                 'b.name as "blogName"',
                 'p."createdAt" as "createdAt"',
                 `jsonb_build_object(
@@ -103,31 +103,85 @@ export class PostsQueryRepository {
         const sortDirection =
             query.sortDirection === SortDirection.Asc ? 'ASC' : 'DESC';
 
-        const queryBuilder = this.postsRepository
+        const postsReactionCTE = this.dataSource
+            .createQueryBuilder()
+            .select([
+                'pr."postId"',
+                'COUNT(*) FILTER (WHERE pr.status = \'Like\')   AS "likesCount"',
+                'COUNT(*) FILTER (WHERE pr.status = \'Dislike\') AS "dislikesCount"',
+            ])
+            .from('post_reaction', 'pr')
+            .groupBy('pr."postId"');
+
+        const newestLikesCTE = this.dataSource
+            .createQueryBuilder()
+            .select([
+                'pr."postId"',
+                `jsonb_agg(
+                    jsonb_build_object(
+                        'addedAt', pr."createdAt",
+                        'login', u.login,
+                        'userId', u.id::TEXT
+                         ) ORDER BY pr."createdAt" DESC
+                      ) AS "newestLikes"`,
+            ])
+            .from(
+                `(SELECT
+                    pr."postId",
+                    pr."createdAt",
+                    pr."userId",
+                    row_number() OVER (PARTITION BY pr."postId" ORDER BY pr."createdAt" DESC) AS rn
+                FROM "post_reaction" pr
+                WHERE pr.status = 'Like')`,
+                'pr',
+            )
+            .leftJoin('users', 'u', 'u.id = pr."userId"')
+            .where('pr.rn <= 3')
+            .groupBy('pr."postId"');
+
+        const userReactionsCTE = this.dataSource
+            .createQueryBuilder()
+            .select(['"postId"', 'status'])
+            .from('post_reaction', 'post_reaction')
+            .where('"userId" = :userId', { userId: dto.userId ?? null });
+
+        const postsQB = this.postsRepository
             .createQueryBuilder('p')
             .select([
-                'p.id',
-                'p.shortDescription',
-                'p.blogId',
-                'p.title',
-                'p.content',
-                'p.createdAt',
-                'b.name',
+                'p.id ::TEXT as id',
+                'p.title as title',
+                'p."shortDescription" as "shortDescription"',
+                'p.content as "content"',
+                'p."blogId"::TEXT as "blogId"',
+                'b.name AS "blogName"',
+                'p."createdAt" as "createdAt"',
+                `jsonb_build_object(
+                'likesCount',    COALESCE(pr."likesCount", 0),
+                'dislikesCount', COALESCE(pr."dislikesCount", 0),
+                'myStatus',      COALESCE(ur.status, 'None'),
+                'newestLikes',   COALESCE(nl."newestLikes", '[]'::jsonb)
+              ) AS "extendedLikesInfo"`,
             ])
+            .addCommonTableExpression(postsReactionCTE, 'pr')
+            .addCommonTableExpression(newestLikesCTE, 'nl')
+            .addCommonTableExpression(userReactionsCTE, 'ur')
             .leftJoin('p.blog', 'b')
+            .leftJoin('pr', 'pr', 'p.id = pr."postId"')
+            .leftJoin('nl', 'nl', 'p.id = nl."postId"')
+            .leftJoin('ur', 'ur', 'p.id = ur."postId"')
+            .orderBy(sortField, sortDirection)
             .limit(query.pageSize)
-            .offset(query.calculateSkip())
-            .orderBy(sortField, sortDirection);
+            .offset(query.calculateSkip());
+
         if (dto.blogId) {
-            queryBuilder.andWhere('p.blogId = :id', { id: dto.blogId });
+            postsQB.andWhere('p.blogId = :id', { id: dto.blogId });
         }
 
-        const posts = await queryBuilder.getRawMany<IRawPost>();
-
-        const total = await queryBuilder.getCount();
+        const posts = await postsQB.getRawMany<PostViewDto>();
+        const total = await postsQB.getCount();
 
         return PaginatedViewDto.mapToView({
-            items: posts.map(PostViewDto.mapToView),
+            items: posts,
             totalCount: total,
             page: query.pageNumber,
             size: query.pageSize,

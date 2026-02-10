@@ -37,11 +37,10 @@ export class CommentsQueryRepository {
         const commentQb = this.commentsRepository
             .createQueryBuilder('c')
             .select([
-                'c.id as id',
+                'c.id::TEXT as id',
                 'c.content as content',
-                'c."createdAt" as createdAt',
-                'u.login as "userLogin"',
-                'u.id as "userId"',
+                'c."createdAt" as "createdAt"',
+                `json_build_object('userId', u.id::TEXT, 'userLogin', u.login) AS "commentatorInfo"`,
                 `jsonb_build_object(
                         'likesCount', COALESCE(li."likesCount", 0)::int,
                         'dislikesCount', COALESCE(li."dislikesCount", 0)::int,
@@ -87,11 +86,10 @@ export class CommentsQueryRepository {
         const commentQb = this.commentsRepository
             .createQueryBuilder('c')
             .select([
-                'c.id as id',
+                'c.id::TEXT as id',
                 'c.content as content',
-                'c."createdAt" as createdAt',
-                'u.login as "userLogin"',
-                'u.id as "userId"',
+                'c."createdAt" as "createdAt"',
+                `json_build_object('userId', u.id::TEXT, 'userLogin', u.login) AS "commentatorInfo"`,
                 `jsonb_build_object(
                         'likesCount', COALESCE(li."likesCount", 0)::int,
                         'dislikesCount', COALESCE(li."dislikesCount", 0)::int,

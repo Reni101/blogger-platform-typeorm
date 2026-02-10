@@ -104,6 +104,7 @@ export class PostsController {
         @Param('postId') postId: number,
         @ExtractUserIfExistsFromRequest() user: UserContextDto | null,
     ) {
+        await this.postsQueryRepository.getByIdOrThrow({ postId });
         return this.commentsQueryRepository.getComments({
             query,
             postId,

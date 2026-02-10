@@ -23,15 +23,15 @@ export class TestingController {
         await this.dataSource.query(
             'TRUNCATE TABLE "blogs" RESTART IDENTITY CASCADE;',
         );
-        // await this.dataSource.query(
-        //     'TRUNCATE TABLE "Comments" RESTART IDENTITY CASCADE;',
-        // );
-        // await this.dataSource.query(
-        //     'TRUNCATE TABLE "PostsReactions" RESTART IDENTITY CASCADE;',
-        // );
-        // await this.dataSource.query(
-        //     'TRUNCATE TABLE "CommentsReactions" RESTART IDENTITY CASCADE;',
-        // );
+        await this.dataSource.query(
+            'TRUNCATE TABLE "comments" RESTART IDENTITY CASCADE;',
+        );
+        await this.dataSource.query(
+            'TRUNCATE TABLE "post_reaction" RESTART IDENTITY CASCADE;',
+        );
+        await this.dataSource.query(
+            'TRUNCATE TABLE "comment_reaction" RESTART IDENTITY CASCADE;',
+        );
 
         return {
             status: 'succeeded',
