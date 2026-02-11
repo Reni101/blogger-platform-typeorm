@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Post } from '../domain/post.entity';
+import { PostReaction } from '../domain/post-reaction.entity';
 import { DomainException } from '../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 import { GetPostsQueryParams } from '../api/input-dto/post/get-posts-query-params.input-dto';
@@ -24,27 +25,41 @@ export class PostsQueryRepository {
                 'pr."postId"',
                 'COUNT(*) FILTER (WHERE pr.status = \'Like\')   AS "likesCount"',
                 'COUNT(*) FILTER (WHERE pr.status = \'Dislike\') AS "dislikesCount"',
-                ` (
-            SELECT jsonb_agg(
-                jsonb_build_object(
-                    'addedAt', sub."createdAt",
-                    'login', u.login,
-                    'userId', u.id ::TEXT
-                ) ORDER BY sub."createdAt" DESC
-            )
-            FROM (
-                SELECT pr2."createdAt", pr2."userId"
-                FROM "post_reaction" pr2
-                WHERE pr2."postId" = $1
-                  AND pr2.status = 'Like'
-                ORDER BY pr2."createdAt" DESC
-                LIMIT 3
-            ) sub
-            LEFT JOIN "users" u ON u.id = sub."userId"
-                ) AS newest_likes`,
             ])
             .from('post_reaction', 'pr')
             .where('pr."postId" = :postId', { postId: dto.postId })
+            .groupBy('pr."postId"');
+
+        const newestLikesCTE = this.dataSource
+            .createQueryBuilder()
+            .select([
+                'pr."postId"',
+                `jsonb_agg(
+                           jsonb_build_object(
+                           'addedAt', pr."createdAt",
+                           'login', u.login,
+                           'userId', u.id::TEXT
+                             ) ORDER BY pr."createdAt" DESC
+                           ) AS "newestLikes"`,
+            ])
+            .from(
+                (subQ) =>
+                    subQ
+                        .select([
+                            'pr."postId" as "postId"',
+                            'pr."createdAt" as "createdAt"',
+                            'pr."userId" as "userId"',
+                        ])
+                        .from(PostReaction, 'pr')
+                        .where(
+                            'pr.status = \'Like\' AND pr."postId" = :postId',
+                            { postId: dto.postId },
+                        )
+                        .orderBy('pr."createdAt"', 'DESC')
+                        .limit(3),
+                'pr',
+            )
+            .leftJoin('users', 'u', 'u.id = pr."userId"')
             .groupBy('pr."postId"');
 
         const userReactionCTE = this.dataSource
@@ -70,13 +85,15 @@ export class PostsQueryRepository {
                      'likesCount',    COALESCE(pr."likesCount", 0)::int,
                      'dislikesCount', COALESCE(pr."dislikesCount", 0)::int,
                      'myStatus',      COALESCE(ur.status, 'None'),
-                     'newestLikes',   COALESCE(pr.newest_likes, '[]'::jsonb)
+                     'newestLikes',   COALESCE(nl."newestLikes", '[]'::jsonb)
                                  ) AS "extendedLikesInfo"`,
             ])
             .leftJoin('p.blog', 'b')
             .addCommonTableExpression(postReactionCTE, 'pr')
+            .addCommonTableExpression(newestLikesCTE, 'nl')
             .addCommonTableExpression(userReactionCTE, 'ur')
             .leftJoin('pr', 'pr', 'pr."postId" = p.id')
+            .leftJoin('nl', 'nl', 'nl."postId" = p.id')
             .leftJoin('ur', 'ur', 'ur."postId" = p.id')
             .where('p.id = :id', { id: dto.postId });
 
@@ -126,19 +143,21 @@ export class PostsQueryRepository {
                       ) AS "newestLikes"`,
             ])
             .from(
-                `(SELECT
-                    pr."postId",
-                    pr."createdAt",
-                    pr."userId",
-                    row_number() OVER (PARTITION BY pr."postId" ORDER BY pr."createdAt" DESC) AS rn
-                FROM "post_reaction" pr
-                WHERE pr.status = 'Like')`,
+                (subQ) =>
+                    subQ
+                        .select([
+                            'pr."postId" as "postId"',
+                            'pr."createdAt" as "createdAt"',
+                            'pr."userId" as "userId"',
+                            'row_number() OVER (PARTITION BY pr."postId" ORDER BY pr."createdAt" DESC) as "rn"',
+                        ])
+                        .from(PostReaction, 'pr')
+                        .where("pr.status = 'Like'"),
                 'pr',
             )
             .leftJoin('users', 'u', 'u.id = pr."userId"')
             .where('pr.rn <= 3')
             .groupBy('pr."postId"');
-
         const userReactionsCTE = this.dataSource
             .createQueryBuilder()
             .select(['"postId"', 'status'])
