@@ -24,7 +24,7 @@ import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.m
                 type: 'postgres',
                 url: config.getOrThrow<string>('PG_URL'),
                 autoLoadEntities: true,
-                synchronize: true,
+                synchronize: false,
             }),
         }),
 
