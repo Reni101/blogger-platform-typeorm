@@ -10,6 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountsModule } from './modules/user-accounts/user-accounts.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.module';
+import { QuizGameModule } from './modules/quiz-game/quiz-game.module';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.m
         NotificationsModule,
         UserAccountsModule,
         BlogPlatformModule,
+        QuizGameModule,
     ],
     controllers: [],
     providers: [

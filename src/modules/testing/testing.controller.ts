@@ -2,7 +2,7 @@ import { Controller, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
-@Controller('testing')
+@Controller('test')
 export class TestingController {
     constructor(@InjectDataSource() protected dataSource: DataSource) {}
     @Delete('all-data')

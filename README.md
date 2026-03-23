@@ -1,98 +1,166 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Blogger Platform
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API блог-платформы с системой аутентификации, управлением контентом и quiz-игрой. Построен на NestJS с использованием паттерна CQRS, TypeORM и PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Технологический стек
 
-## Description
+- **Runtime:** Node.js, TypeScript
+- **Framework:** NestJS 11
+- **ORM:** TypeORM 0.3
+- **База данных:** PostgreSQL
+- **Аутентификация:** JWT (access + refresh в http-only cookie), Passport (Local, JWT), HTTP Basic Auth для SA
+- **Архитектура:** CQRS (`@nestjs/cqrs`), модульная структура
+- **Документация API:** Swagger (`/swagger`)
+- **Рассылка:** Nodemailer + `@nestjs-modules/mailer` (SMTP)
+- **Тестирование:** Jest, Supertest (e2e)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Структура проекта
 
-## Project setup
-
-```bash
-$ npm install
+```
+src/
+├── core/                              # Общие DTO, фильтры исключений
+│   ├── dto/                           # Базовые классы пагинации и query-параметров
+│   └── exceptions/                    # Domain-исключения и HTTP-фильтры
+├── setup/                             # Конфигурация приложения
+│   ├── app.setup.ts                   # Pipes, глобальный префикс, Swagger
+│   └── swagger.setup.ts              
+├── modules/
+│   ├── user-accounts/                 # Пользователи, сессии, аутентификация
+│   │   ├── api/                       # Контроллеры (auth, sa.users, security-devices)
+│   │   ├── application/               # CQRS use-cases и queries
+│   │   ├── domain/                    # Сущности: User, Session, EmailConfirmation
+│   │   ├── guards/                    # JWT, Local, Basic guards и стратегии
+│   │   └── infrastructure/            # Репозитории
+│   ├── blogers-platform/              # Блоги, посты, комментарии, лайки
+│   │   ├── api/                       # Контроллеры (blogs, posts, comments, sa.blogs)
+│   │   ├── application/               # CQRS use-cases
+│   │   ├── domain/                    # Сущности: Blog, Post, Comment, PostReaction, CommentReaction
+│   │   └── infrastructure/            # Репозитории
+│   ├── quiz-game/                     # Quiz-игра (вопросы, игры)
+│   │   ├── api/                       # SA контроллер для управления вопросами
+│   │   ├── domain/                    # Сущности: Question, Game
+│   │   └── infrastructure/            # Репозитории
+│   ├── notifications/                 # Email-сервис для отправки писем
+│   └── testing/                       # Эндпоинт для очистки БД в тестах
+└── main.ts
 ```
 
-## Compile and run the project
+## Модули и функциональность
 
-```bash
-# development
-$ npm run start
+### User Accounts
+Регистрация, аутентификация (login/logout), подтверждение email, восстановление пароля, refresh-токены, управление устройствами (сессиями). SA-эндпоинты для администрирования пользователей.
 
-# watch mode
-$ npm run start:dev
+### Blogers Platform
+Полный CRUD для блогов, постов и комментариев. Система лайков/дизлайков для постов и комментариев. Публичные эндпоинты с опциональной JWT-авторизацией для персонализации выдачи. SA-эндпоинты для управления контентом.
 
-# production mode
-$ npm run start:prod
+### Quiz Game
+Управление вопросами для quiz-игры (SA). Сущность `Game` подготовлена для реализации игрового процесса.
+
+### Notifications
+Отправка email-уведомлений (подтверждение регистрации, восстановление пароля) через SMTP.
+
+## API эндпоинты
+
+Все маршруты имеют префикс `/api`.
+
+| Группа | Метод | Эндпоинт | Авторизация |
+|--------|-------|----------|-------------|
+| **Auth** | POST | `auth/login` | Local (login + password) |
+| | POST | `auth/registration` | — |
+| | POST | `auth/registration-confirmation` | — |
+| | POST | `auth/registration-email-resending` | — |
+| | POST | `auth/password-recovery` | — |
+| | POST | `auth/new-password` | — |
+| | POST | `auth/refresh-token` | Cookie |
+| | POST | `auth/logout` | Cookie |
+| | GET | `auth/me` | Bearer JWT |
+| **SA Users** | GET/POST/DELETE | `sa/users` | Basic Auth |
+| **Security** | GET/DELETE | `security/devices` | Cookie |
+| **Blogs** | GET | `blogs`, `blogs/:id`, `blogs/:id/posts` | Optional JWT |
+| **SA Blogs** | CRUD | `sa/blogs`, `sa/blogs/:id/posts` | Basic Auth |
+| **Posts** | GET | `posts`, `posts/:id` | Optional JWT |
+| | POST | `posts/:postId/comments` | Bearer JWT |
+| | PUT | `posts/:postId/like-status` | Bearer JWT |
+| **Comments** | GET/PUT/DELETE | `comments/:id` | Bearer JWT |
+| **SA Quiz** | GET | `sa/quiz/questions` | Basic Auth |
+| **Testing** | DELETE | `test/all-data` | — |
+
+## Сущности БД
+
+| Сущность | Описание |
+|----------|----------|
+| `User` | Логин, email, хэш пароля, код восстановления, soft delete |
+| `EmailConfirmation` | Код подтверждения, срок действия, статус |
+| `Session` | Устройство, IP, IAT/EXP refresh-токена |
+| `Blog` | Название, описание, URL сайта |
+| `Post` | Заголовок, описание, контент, привязка к блогу |
+| `Comment` | Контент, привязка к посту и пользователю |
+| `PostReaction` | Лайк/дизлайк поста пользователем |
+| `CommentReaction` | Лайк/дизлайк комментария пользователем |
+| `Question` | Тело вопроса, правильные ответы (JSONB), статус публикации |
+| `Game` | Игровая сессия (в разработке) |
+
+## Установка и запуск
+
+### Переменные окружения
+
+Создайте файл `.env` в корне проекта:
+
+```env
+PORT=3000
+PG_URL=postgres://user:password@localhost:5432/blogger_platform
+SECRET_KEY=your-jwt-secret
+ACCESS_TOKEN_EXPIRE_IN=5m
+EMAIL=your-email@mail.ru
+PASS=your-email-password
 ```
 
-## Run tests
+### Запуск
 
 ```bash
-# unit tests
-$ npm run test
+# Установка зависимостей
+npm install
 
-# e2e tests
-$ npm run test:e2e
+# Применение миграций
+npm run migration:run
 
-# test coverage
-$ npm run test:cov
+# Запуск в dev-режиме
+npm run start:dev
+
+# Запуск в production
+npm run build && npm run start:prod
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Миграции
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Генерация миграции на основе изменений в сущностях
+npm run migration:generate -- migrations/MigrationName
+
+# Создание пустой миграции
+npm run migration:create -- migrations/MigrationName
+
+# Применение миграций
+npm run migration:run
+
+# Откат последней миграции
+npm run migration:revert
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Тесты
 
-## Resources
+```bash
+# Unit-тесты
+npm run test
 
-Check out a few resources that may come in handy when working with NestJS:
+# E2E-тесты
+npm run test:e2e
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Swagger
 
-## Support
+После запуска приложения документация API доступна по адресу:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```
+http://localhost:3000/swagger
+```

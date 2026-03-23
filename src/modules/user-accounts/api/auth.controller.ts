@@ -54,7 +54,6 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @ApiBody({ schema: loginApiSchema })
     @ApiResponse({ schema: loginResSchema })
-    // @UseGuards(ThrottlerGuard)
     @Post('login')
     async login(
         @ExtractUserFromRequest() user: UserContextDto,
