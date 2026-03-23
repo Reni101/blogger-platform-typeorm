@@ -1,7 +1,6 @@
 import {
     Column,
     CreateDateColumn,
-    DeleteDateColumn,
     Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
@@ -31,7 +30,4 @@ export class Question {
 
     @UpdateDateColumn()
     updatedAt: Date | null;
-
-    @DeleteDateColumn()
-    deletedAt: Date | null;
 }
