@@ -7,6 +7,7 @@ import {
     HttpStatus,
     Param,
     Post,
+    Put,
     Query,
     UseGuards,
 } from '@nestjs/common';
@@ -15,9 +16,14 @@ import { CommandBus } from '@nestjs/cqrs';
 import { QuestionsQueryRepository } from '../infastructure/questions-query.repository';
 import { ApiSecurity } from '@nestjs/swagger';
 import { BasicAuthGuard } from '../../user-accounts/guards/basic/bacis-auth.guard';
-import { CreateQuestionInputDto } from './input-dto/question.input-dto';
+import {
+    CreateQuestionInputDto,
+    UpdatePublished,
+} from './input-dto/question.input-dto';
 import { CreateQuestionCommand } from '../application/use-cases/create-question.use-case';
 import { DeleteQuestionCommand } from '../application/use-cases/delete-question.use-case';
+import { UpdateQuestionCommand } from '../application/use-cases/update-question.use-case';
+import { UpdatePublishQuestionCommand } from '../application/use-cases/update-publish-question.use-case';
 
 @ApiSecurity('basic')
 @Controller('sa/quiz/questions')
@@ -45,6 +51,27 @@ export class SaQuizController {
     async deleteQuestion(@Param('id') questionId: number) {
         return this.commandBus.execute<DeleteQuestionCommand, void>(
             new DeleteQuestionCommand(questionId),
+        );
+    }
+
+    @Put(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async updateQuestion(
+        @Param('id') id: number,
+        @Body() dto: CreateQuestionInputDto,
+    ) {
+        return this.commandBus.execute<UpdateQuestionCommand, void>(
+            new UpdateQuestionCommand({ id, ...dto }),
+        );
+    }
+    @Put(':id/publish')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    async updateQuestionPublish(
+        @Param('id') id: number,
+        @Body() dto: UpdatePublished,
+    ) {
+        return this.commandBus.execute<UpdatePublishQuestionCommand, void>(
+            new UpdatePublishQuestionCommand({ id, ...dto }),
         );
     }
 }

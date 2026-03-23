@@ -1,5 +1,5 @@
 import { Trim } from '../../../../core/decorators/transform/trim';
-import { IsArray, IsString, Length } from 'class-validator';
+import { IsArray, IsBoolean, IsString, Length } from 'class-validator';
 import { questionBodyConstraints } from '../../domain/question.entity';
 
 export class CreateQuestionInputDto {
@@ -14,4 +14,9 @@ export class CreateQuestionInputDto {
     @IsArray()
     @IsString({ each: true })
     correctAnswers: string[];
+}
+
+export class UpdatePublished {
+    @IsBoolean()
+    published: boolean;
 }

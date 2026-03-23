@@ -38,6 +38,9 @@ export class QuestionsRepository {
         return question;
     }
 
+    async save(q: Question) {
+        return this.questionsRepository.save(q);
+    }
     async delete(questionId: number) {
         return this.questionsRepository.delete(questionId);
     }
