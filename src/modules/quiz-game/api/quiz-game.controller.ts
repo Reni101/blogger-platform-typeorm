@@ -61,8 +61,10 @@ export class QuizGameController {
     @ApiBearerAuth()
     @Post(`pairs/connection`)
     async connection(@ExtractUserFromRequest() user: UserContextDto) {
-        return this.commandBus.execute<ConnectionCommand, any>(
+        const gameId = await this.commandBus.execute<ConnectionCommand, string>(
             new ConnectionCommand(user.id),
         );
+
+        return this.gameQueryRepository.findGameByIdOrThrow(gameId);
     }
 }

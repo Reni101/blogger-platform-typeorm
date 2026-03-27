@@ -6,7 +6,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { GameQuestionEntity } from './game-question.entity';
+import { GameQuestion } from './game.question';
 
 export const questionBodyConstraints = {
     minLength: 10,
@@ -27,8 +27,8 @@ export class Question {
     @Column({ type: 'boolean', default: false })
     published: boolean;
 
-    @OneToMany(() => GameQuestionEntity, (gq) => gq.question)
-    gameQuestions: GameQuestionEntity[];
+    @OneToMany(() => GameQuestion, (gq) => gq.question)
+    gameQuestions: GameQuestion[];
 
     @CreateDateColumn()
     createdAt: Date;

@@ -9,7 +9,7 @@ import { Game } from './game.entity';
 import { Question } from './question.entity';
 
 @Entity({ name: 'game_question' })
-export class GameQuestionEntity {
+export class GameQuestion {
     @PrimaryGeneratedColumn()
     id: number;
 

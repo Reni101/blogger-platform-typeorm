@@ -13,8 +13,11 @@ import { GameQueryRepository } from './infastructure/game-query.repository';
 import { Answer } from './domain/answer.entity';
 import { Game } from './domain/game.entity';
 import { Player } from './domain/player.entity';
-import { GameQuestionEntity } from './domain/game-question.entity';
+import { GameQuestion } from './domain/game.question';
 import { ConnectionUseCase } from './application/use-cases/connection.use-case';
+import { GameRepository } from './infastructure/game.repository';
+import { PlayerRepository } from './infastructure/player.repository';
+import { GameQuestionRepository } from './infastructure/game-question.repository';
 
 const useCases = [
     CreateQuestionUseCase,
@@ -24,7 +27,7 @@ const useCases = [
     ConnectionUseCase,
 ];
 
-const entities = [Question, Answer, Game, Player, Question, GameQuestionEntity];
+const entities = [Question, Answer, Game, Player, Question, GameQuestion];
 
 @Module({
     imports: [TypeOrmModule.forFeature(entities)],
@@ -33,6 +36,9 @@ const entities = [Question, Answer, Game, Player, Question, GameQuestionEntity];
         QuestionsQueryRepository,
         QuestionsRepository,
         GameQueryRepository,
+        GameRepository,
+        PlayerRepository,
+        GameQuestionRepository,
         ...useCases,
     ],
 })

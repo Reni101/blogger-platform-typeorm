@@ -8,12 +8,12 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Player } from './player.entity';
-import { GameQuestionEntity } from './game-question.entity';
+import { GameQuestion } from './game.question';
 
 export enum GameStatus {
-    Active = 'active',
-    PendingSecondPlayer = 'pendingSecondPlayer',
-    Finished = 'finished',
+    Active = 'Active',
+    Pending = 'PendingSecondPlayer',
+    Finished = 'Finished',
 }
 
 @Entity({ name: 'games' })
@@ -21,7 +21,7 @@ export class Game {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ type: 'text', default: GameStatus.PendingSecondPlayer })
+    @Column({ type: 'text', default: GameStatus.Pending })
     status: GameStatus;
 
     @OneToOne(() => Player, { cascade: true })
@@ -38,8 +38,8 @@ export class Game {
     @Column({ type: 'int', nullable: true })
     playerTwoId: number | null;
 
-    @OneToMany(() => GameQuestionEntity, (gq) => gq.game)
-    gameQuestions: GameQuestionEntity[];
+    @OneToMany(() => GameQuestion, (gq) => gq.game)
+    gameQuestions: GameQuestion[];
 
     @CreateDateColumn()
     pairCreatedDate: Date;

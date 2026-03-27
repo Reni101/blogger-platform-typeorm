@@ -44,4 +44,14 @@ export class QuestionsRepository {
     async delete(questionId: number) {
         return this.questionsRepository.delete(questionId);
     }
+
+    async getRandomQuestions() {
+        const qb = this.questionsRepository
+            .createQueryBuilder('q')
+            .select(['q.id as id'])
+            .where('q.published = true')
+            .orderBy('RANDOM()')
+            .limit(5);
+        return qb.getRawMany<{ id: number }>();
+    }
 }
