@@ -2,6 +2,7 @@ import {
     ArgumentsHost,
     Catch,
     ExceptionFilter,
+    HttpException,
     HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -13,16 +14,17 @@ import { DomainExceptionCode } from '../domain-exception-codes';
 @Catch()
 export class AllHttpExceptionsFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost): void {
-        //ctx нужен, чтобы получить request и response (express). Это из документации, делаем по аналогии
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
         const request = ctx.getRequest<Request>();
-        //Если сработал этот фильтр, то пользователю улетит 500я ошибка
+
         const message = exception.message || 'Unknown exception occurred.';
         const status =
-            exception?.status === 429
-                ? HttpStatus.TOO_MANY_REQUESTS
-                : HttpStatus.INTERNAL_SERVER_ERROR;
+            exception instanceof HttpException
+                ? exception.getStatus()
+                : exception?.status === 429
+                  ? HttpStatus.TOO_MANY_REQUESTS
+                  : HttpStatus.INTERNAL_SERVER_ERROR;
         const responseBody = this.buildResponseBody(request.url, message);
         response.status(status).json(responseBody);
     }

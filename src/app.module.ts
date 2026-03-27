@@ -25,7 +25,7 @@ import { QuizGameModule } from './modules/quiz-game/quiz-game.module';
                 type: 'postgres',
                 url: config.getOrThrow<string>('PG_URL'),
                 autoLoadEntities: true,
-                synchronize: false,
+                synchronize: true,
             }),
         }),
 

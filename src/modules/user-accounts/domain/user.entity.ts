@@ -12,6 +12,7 @@ import { Session } from './session.entity';
 import { Comment } from '../../blogers-platform/domain/comment.entity';
 import { CommentReaction } from '../../blogers-platform/domain/comment-reaction.entity';
 import { PostReaction } from '../../blogers-platform/domain/post-reaction.entity';
+import { Player } from '../../quiz-game/domain/player.entity';
 
 export const loginConstraints = {
     minLength: 3,
@@ -71,6 +72,9 @@ export class User {
 
     @OneToMany(() => CommentReaction, (pr) => pr.user)
     postsReactions: PostReaction[];
+
+    @OneToMany(() => Player, (p) => p.user)
+    players: Player[];
 
     async softDelete() {
         this.deletedAt = new Date();
