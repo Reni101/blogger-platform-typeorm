@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Player } from './player.entity';
 import { GameQuestion } from './game.question';
+import { Answer } from './answer.entity';
 
 export enum GameStatus {
     Active = 'Active',
@@ -40,6 +41,9 @@ export class Game {
 
     @OneToMany(() => GameQuestion, (gq) => gq.game)
     gameQuestions: GameQuestion[];
+
+    @OneToMany(() => Answer, (a) => a.game)
+    answers: Answer[];
 
     @CreateDateColumn()
     pairCreatedDate: Date;

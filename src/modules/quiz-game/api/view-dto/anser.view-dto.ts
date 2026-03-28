@@ -1,9 +1,9 @@
 import { Answer, AnswerStatus } from '../../domain/answer.entity';
 
 export class AnswerViewDto {
-    'questionId': string;
-    'answerStatus': AnswerStatus;
-    'addedAt': string;
+    questionId: string;
+    answerStatus: AnswerStatus;
+    addedAt: string;
 
     static mapToView(a: Answer): AnswerViewDto {
         const dto = new AnswerViewDto();

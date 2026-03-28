@@ -2,9 +2,7 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
     ManyToOne,
-    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Player } from './player.entity';
@@ -36,15 +34,15 @@ export class Answer {
     @Column()
     playerId: number;
 
-    @ManyToOne(() => Question)
+    @ManyToOne(() => Question, (q) => q.answers)
     question: Question;
 
     @Column()
     questionId: number;
 
-    @OneToOne(() => Game)
-    @JoinColumn()
+    @ManyToOne(() => Game, (g) => g.answers)
     game: Game;
+
     @Column()
     gameId: string;
 }

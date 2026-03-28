@@ -31,6 +31,12 @@ export class GameRepository {
                 { status: GameStatus.Active, playerOne: { userId } },
                 { status: GameStatus.Active, playerTwo: { userId } },
             ],
+
+            relations: {
+                gameQuestions: { question: true },
+                playerOne: { answers: true },
+                playerTwo: { answers: true },
+            },
         });
     }
 

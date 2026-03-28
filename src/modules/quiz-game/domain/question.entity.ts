@@ -7,6 +7,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { GameQuestion } from './game.question';
+import { Answer } from './answer.entity';
 
 export const questionBodyConstraints = {
     minLength: 10,
@@ -29,6 +30,9 @@ export class Question {
 
     @OneToMany(() => GameQuestion, (gq) => gq.question)
     gameQuestions: GameQuestion[];
+
+    @OneToMany(() => Answer, (a) => a.question)
+    answers: Answer[];
 
     @CreateDateColumn()
     createdAt: Date;
