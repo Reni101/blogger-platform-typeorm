@@ -18,6 +18,8 @@ import { ConnectionUseCase } from './application/use-cases/connection.use-case';
 import { GameRepository } from './infastructure/game.repository';
 import { PlayerRepository } from './infastructure/player.repository';
 import { GameQuestionRepository } from './infastructure/game-question.repository';
+import { AnswersRepository } from './infastructure/answers.repository';
+import { AnswerUseCase } from './application/use-cases/answer.use-case';
 
 const useCases = [
     CreateQuestionUseCase,
@@ -25,6 +27,7 @@ const useCases = [
     UpdateQuestionUseCase,
     UpdatePublishQuestionUseCase,
     ConnectionUseCase,
+    AnswerUseCase,
 ];
 
 const entities = [Question, Answer, Game, Player, Question, GameQuestion];
@@ -39,6 +42,7 @@ const entities = [Question, Answer, Game, Player, Question, GameQuestion];
         GameRepository,
         PlayerRepository,
         GameQuestionRepository,
+        AnswersRepository,
         ...useCases,
     ],
 })

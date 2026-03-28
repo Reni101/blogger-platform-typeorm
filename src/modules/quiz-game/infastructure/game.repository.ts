@@ -25,6 +25,15 @@ export class GameRepository {
         });
     }
 
+    async findActiveGame(userId: number) {
+        return this.gamesRepository.findOne({
+            where: [
+                { status: GameStatus.Active, playerOne: { userId } },
+                { status: GameStatus.Active, playerTwo: { userId } },
+            ],
+        });
+    }
+
     async createGame(playerId: number) {
         const game = this.gamesRepository.create({
             status: GameStatus.Pending,

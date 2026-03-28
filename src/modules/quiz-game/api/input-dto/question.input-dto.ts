@@ -20,3 +20,8 @@ export class UpdatePublished {
     @IsBoolean()
     published: boolean;
 }
+
+export class AnswerDto {
+    @IsString()
+    answer: string;
+}

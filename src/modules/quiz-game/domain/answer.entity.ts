@@ -2,11 +2,14 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
+    OneToOne,
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from './question.entity';
+import { Game } from './game.entity';
 
 export enum AnswerStatus {
     Correct = 'Correct',
@@ -38,4 +41,10 @@ export class Answer {
 
     @Column()
     questionId: number;
+
+    @OneToOne(() => Game)
+    @JoinColumn()
+    game: Game;
+    @Column()
+    gameId: string;
 }

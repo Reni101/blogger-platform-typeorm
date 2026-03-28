@@ -1,4 +1,5 @@
 import {
+    Body,
     Controller,
     Get,
     Param,
@@ -15,6 +16,9 @@ import { DomainException } from '../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-codes';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConnectionCommand } from '../application/use-cases/connection.use-case';
+import { AnswerDto } from './input-dto/question.input-dto';
+import { AnswerViewDto } from './view-dto/anser.view-dto';
+import { AnswerCommand } from '../application/use-cases/answer.use-case';
 
 @Controller('pair-game-quiz')
 export class QuizGameController {
@@ -66,5 +70,17 @@ export class QuizGameController {
         );
 
         return this.gameQueryRepository.findGameByIdOrThrow(gameId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Post(`pairs/my-current/answers`)
+    async answer(
+        @ExtractUserFromRequest() user: UserContextDto,
+        @Body() body: AnswerDto,
+    ): Promise<AnswerViewDto> {
+        return this.commandBus.execute<AnswerCommand, AnswerViewDto>(
+            new AnswerCommand({ answer: body.answer, userId: user.id }),
+        );
     }
 }
