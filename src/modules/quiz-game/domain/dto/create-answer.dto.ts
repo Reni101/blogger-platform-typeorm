@@ -2,7 +2,7 @@ import { AnswerStatus } from '../answer.entity';
 
 export class CreateAnswerDto {
     answer: string;
-    gameId: string;
+    gameId: number;
     status: AnswerStatus;
     playerId: number;
     questionId: number;

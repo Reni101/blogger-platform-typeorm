@@ -52,4 +52,11 @@ export class GameRepository {
     async save(game: Game) {
         await this.gamesRepository.save(game);
     }
+
+    async finishGame(gameId: number) {
+        await this.gamesRepository.update(gameId, {
+            status: GameStatus.Finished,
+            finishGameDate: new Date(),
+        });
+    }
 }

@@ -14,6 +14,7 @@ export class UpdateQuestionUseCase implements ICommandHandler<UpdateQuestionComm
         const question = await this.questionsRepository.findByIdOrThrow(dto.id);
         question.body = dto.body;
         question.correctAnswers = dto.correctAnswers;
+        question.updatedAt = new Date();
         await this.questionsRepository.save(question);
     }
 }

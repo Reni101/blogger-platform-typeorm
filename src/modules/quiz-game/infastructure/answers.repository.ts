@@ -22,7 +22,7 @@ export class AnswersRepository {
         return answer;
     }
 
-    async getUserAnswers(userId: number, gameId: string) {
+    async getUserAnswers(userId: number, gameId: number) {
         return this.answersRepository.findBy({ player: { userId }, gameId });
     }
 

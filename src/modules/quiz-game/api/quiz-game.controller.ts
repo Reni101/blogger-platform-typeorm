@@ -2,8 +2,9 @@ import {
     Body,
     Controller,
     Get,
+    HttpCode,
+    HttpStatus,
     Param,
-    ParseUUIDPipe,
     Post,
     UseGuards,
 } from '@nestjs/common';
@@ -19,11 +20,13 @@ import { ConnectionCommand } from '../application/use-cases/connection.use-case'
 import { AnswerDto } from './input-dto/question.input-dto';
 import { AnswerViewDto } from './view-dto/anser.view-dto';
 import { AnswerCommand } from '../application/use-cases/answer.use-case';
+import { AnswerQueryRepository } from '../infastructure/answer-query.repository';
 
 @Controller('pair-game-quiz')
 export class QuizGameController {
     constructor(
         private gameQueryRepository: GameQueryRepository,
+        private answerQueryRepository: AnswerQueryRepository,
         private commandBus: CommandBus,
     ) {}
 
@@ -40,10 +43,17 @@ export class QuizGameController {
     @ApiBearerAuth()
     @Get(`pairs/:id`)
     async getGameById(
-        @Param('id', ParseUUIDPipe) id: string,
+        @Param('id') id: string,
         @ExtractUserFromRequest() user: UserContextDto,
     ) {
-        const game = await this.gameQueryRepository.findGameByIdOrThrow(id);
+        if (isNaN(+id)) {
+            throw new DomainException({
+                code: DomainExceptionCode.BadRequest,
+                message: `Invalid ID`,
+            });
+        }
+
+        const game = await this.gameQueryRepository.findGameByIdOrThrow(+id);
 
         const userId = String(user.id);
 
@@ -64,8 +74,9 @@ export class QuizGameController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Post(`pairs/connection`)
+    @HttpCode(HttpStatus.OK)
     async connection(@ExtractUserFromRequest() user: UserContextDto) {
-        const gameId = await this.commandBus.execute<ConnectionCommand, string>(
+        const gameId = await this.commandBus.execute<ConnectionCommand, number>(
             new ConnectionCommand(user.id),
         );
 
@@ -75,12 +86,15 @@ export class QuizGameController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Post(`pairs/my-current/answers`)
+    @HttpCode(HttpStatus.OK)
     async answer(
         @ExtractUserFromRequest() user: UserContextDto,
         @Body() body: AnswerDto,
     ): Promise<AnswerViewDto> {
-        return this.commandBus.execute<AnswerCommand, AnswerViewDto>(
+        const answerId = await this.commandBus.execute<AnswerCommand, number>(
             new AnswerCommand({ answer: body.answer, userId: user.id }),
         );
+
+        return this.answerQueryRepository.getByIdOrThrow(answerId);
     }
 }

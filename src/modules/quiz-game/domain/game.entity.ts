@@ -8,7 +8,7 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Player } from './player.entity';
-import { GameQuestion } from './game.question';
+import { GameQuestion } from './game-question.entity';
 import { Answer } from './answer.entity';
 
 export enum GameStatus {
@@ -19,8 +19,8 @@ export enum GameStatus {
 
 @Entity({ name: 'games' })
 export class Game {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+    @PrimaryGeneratedColumn()
+    id: number;
 
     @Column({ type: 'text', default: GameStatus.Pending })
     status: GameStatus;

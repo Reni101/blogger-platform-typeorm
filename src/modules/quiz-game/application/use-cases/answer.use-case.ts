@@ -4,9 +4,7 @@ import { GameRepository } from '../../infastructure/game.repository';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
 import { AnswerStatus } from '../../domain/answer.entity';
-import { GameStatus } from '../../domain/game.entity';
 import { PlayerRepository } from '../../infastructure/player.repository';
-import { AnswerViewDto } from '../../api/view-dto/anser.view-dto';
 
 export class AnswerCommand {
     constructor(public dto: { userId: number; answer: string }) {}
@@ -57,7 +55,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
             : AnswerStatus.Incorrect;
 
         const player =
-            game.playerOne?.userId === dto.userId
+            game.playerOne?.userId === +dto.userId
                 ? game.playerOne
                 : game.playerTwo!;
         if (status === AnswerStatus.Correct) {
@@ -71,7 +69,6 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
             gameId: game.id,
             playerId: player.id,
         });
-
         const totalUserAnswers = userAnswers.length + 1;
 
         if (totalUserAnswers === 5) {
@@ -86,9 +83,7 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
             );
 
             if (opponentAnswers.length === 5) {
-                game.status = GameStatus.Finished;
-                game.finishGameDate = new Date();
-                await this.gameRepository.save(game);
+                await this.gameRepository.finishGame(game.id);
 
                 const hasCorrectAnswer = opponentAnswers.some(
                     (a) => a.status === AnswerStatus.Correct,
@@ -100,7 +95,6 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
                 }
             }
         }
-
-        return AnswerViewDto.mapToView(answer);
+        return answer.id;
     }
 }

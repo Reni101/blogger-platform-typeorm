@@ -4,9 +4,8 @@ import {
     Entity,
     OneToMany,
     PrimaryGeneratedColumn,
-    UpdateDateColumn,
 } from 'typeorm';
-import { GameQuestion } from './game.question';
+import { GameQuestion } from './game-question.entity';
 import { Answer } from './answer.entity';
 
 export const questionBodyConstraints = {
@@ -37,6 +36,6 @@ export class Question {
     @CreateDateColumn()
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @Column({ type: 'timestamp', nullable: true })
     updatedAt: Date | null;
 }

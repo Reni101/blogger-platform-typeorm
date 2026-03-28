@@ -12,6 +12,7 @@ export class UpdatePublishQuestionUseCase implements ICommandHandler<UpdatePubli
     async execute({ dto }: UpdatePublishQuestionCommand) {
         const question = await this.questionsRepository.findByIdOrThrow(dto.id);
         question.published = dto.published;
+        question.updatedAt = new Date();
         await this.questionsRepository.save(question);
     }
 }

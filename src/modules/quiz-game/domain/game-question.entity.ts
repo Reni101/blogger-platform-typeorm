@@ -21,7 +21,7 @@ export class GameQuestion {
     game: Game;
 
     @Column()
-    gameId: string;
+    gameId: number;
 
     @ManyToOne(() => Question, (q) => q.gameQuestions)
     @JoinColumn()

@@ -44,5 +44,5 @@ export class Answer {
     game: Game;
 
     @Column()
-    gameId: string;
+    gameId: number;
 }

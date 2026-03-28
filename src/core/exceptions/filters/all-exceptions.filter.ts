@@ -2,7 +2,6 @@ import {
     ArgumentsHost,
     Catch,
     ExceptionFilter,
-    HttpException,
     HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -20,11 +19,10 @@ export class AllHttpExceptionsFilter implements ExceptionFilter {
 
         const message = exception.message || 'Unknown exception occurred.';
         const status =
-            exception instanceof HttpException
-                ? exception.getStatus()
-                : exception?.status === 429
-                  ? HttpStatus.TOO_MANY_REQUESTS
-                  : HttpStatus.INTERNAL_SERVER_ERROR;
+            exception?.status === 429
+                ? HttpStatus.TOO_MANY_REQUESTS
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+
         const responseBody = this.buildResponseBody(request.url, message);
         response.status(status).json(responseBody);
     }
