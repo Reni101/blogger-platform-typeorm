@@ -53,6 +53,18 @@ export class GameRepository {
         await this.gamesRepository.save(game);
     }
 
+    async findActiveGamesWithRelations() {
+        return this.gamesRepository.find({
+            where: { status: GameStatus.Active },
+            relations: {
+                playerOne: true,
+                playerTwo: true,
+                answers: true,
+                gameQuestions: { question: true },
+            },
+        });
+    }
+
     async finishGame(gameId: number) {
         await this.gamesRepository.update(gameId, {
             status: GameStatus.Finished,

@@ -1,5 +1,7 @@
 import { Game, GameStatus } from '../../domain/game.entity';
 import { AnswerViewDto } from './anser.view-dto';
+import { PaginatedViewDto } from '../../../../core/dto/base.paginated.view-dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class PlayerProgress {
     answers: AnswerViewDto[] | null;
@@ -64,4 +66,9 @@ export class GameViewDto {
             : null;
         return dto;
     }
+}
+
+export class PaginatedGamesViewDto extends PaginatedViewDto<GameViewDto[]> {
+    @ApiProperty({ type: [GameViewDto] })
+    items: GameViewDto[];
 }

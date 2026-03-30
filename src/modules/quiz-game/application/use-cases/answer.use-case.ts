@@ -81,16 +81,21 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
     }
 
     private async finishGame(game: Game, userId: number) {
-        const currentPlayer =
-            await this.playerRepository.findByUserIdOrThrow(userId);
-
-        const opponentUserId =
+        const currentPlayerId =
             game.playerOne?.userId === userId
-                ? game.playerTwo?.userId
-                : game.playerOne!.userId;
+                ? game.playerOne?.id
+                : game.playerTwo!.id;
 
-        const opponent = await this.playerRepository.findByUserIdOrThrow(
-            opponentUserId!,
+        const opponentPlayerId =
+            game.playerOne?.userId === userId
+                ? game.playerTwo?.id
+                : game.playerOne!.id;
+
+        const currentPlayer =
+            await this.playerRepository.findPlayerOrThrow(currentPlayerId);
+
+        const opponent = await this.playerRepository.findPlayerOrThrow(
+            opponentPlayerId!,
         );
 
         const opponentAnswers = await this.answersRepository.getUserAnswers(

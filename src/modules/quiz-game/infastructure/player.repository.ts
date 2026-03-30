@@ -17,9 +17,9 @@ export class PlayerRepository {
         return player;
     }
 
-    async findByUserIdOrThrow(userId: number) {
+    async findPlayerOrThrow(playerId: number) {
         const player = await this.playersRepository.findOne({
-            where: { userId },
+            where: { id: playerId },
         });
 
         if (!player) {

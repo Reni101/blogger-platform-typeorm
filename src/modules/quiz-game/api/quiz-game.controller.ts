@@ -6,6 +6,7 @@ import {
     HttpStatus,
     Param,
     Post,
+    Query,
     UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../user-accounts/guards/bearer/jwt-auth.guard';
@@ -21,6 +22,8 @@ import { AnswerDto } from './input-dto/question.input-dto';
 import { AnswerViewDto } from './view-dto/anser.view-dto';
 import { AnswerCommand } from '../application/use-cases/answer.use-case';
 import { PlayerQueryRepository } from '../infastructure/player-query.repository';
+import { GetGamesQueryParamsInputDto } from './input-dto/get-games-query-params.input-dto';
+import { GetTopQueryParamsInputDto } from './input-dto/get-top-query-params.input-dto';
 
 @Controller('pair-game-quiz')
 export class QuizGameController {
@@ -41,9 +44,24 @@ export class QuizGameController {
 
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
-    @Get('pairs/my-static')
+    @Get('pairs/my')
+    async getUserGames(
+        @ExtractUserFromRequest() user: UserContextDto,
+        @Query() query: GetGamesQueryParamsInputDto,
+    ) {
+        return this.gameQueryRepository.getUserGames(query, user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Get('users/my-statistic')
     async getUserStatic(@ExtractUserFromRequest() user: UserContextDto) {
         return this.playerQueryRepository.getUserStatic(user.id);
+    }
+
+    @Get('users/top')
+    async getTop(@Query() query: GetTopQueryParamsInputDto) {
+        return this.playerQueryRepository.getTop(query);
     }
 
     @UseGuards(JwtAuthGuard)

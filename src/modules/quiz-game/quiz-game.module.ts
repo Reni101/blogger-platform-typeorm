@@ -22,6 +22,7 @@ import { AnswersRepository } from './infastructure/answers.repository';
 import { AnswerUseCase } from './application/use-cases/answer.use-case';
 import { AnswerQueryRepository } from './infastructure/answer-query.repository';
 import { PlayerQueryRepository } from './infastructure/player-query.repository';
+import { TaskService } from './application/task.service';
 
 const useCases = [
     CreateQuestionUseCase,
@@ -38,6 +39,7 @@ const entities = [Question, Answer, Game, Player, Question, GameQuestion];
     imports: [TypeOrmModule.forFeature(entities)],
     controllers: [SaQuizController, QuizGameController],
     providers: [
+        TaskService,
         QuestionsQueryRepository,
         QuestionsRepository,
         GameQueryRepository,

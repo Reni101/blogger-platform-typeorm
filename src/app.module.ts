@@ -11,6 +11,7 @@ import { UserAccountsModule } from './modules/user-accounts/user-accounts.module
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.module';
 import { QuizGameModule } from './modules/quiz-game/quiz-game.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
     imports: [
@@ -28,6 +29,7 @@ import { QuizGameModule } from './modules/quiz-game/quiz-game.module';
                 synchronize: true,
             }),
         }),
+        ScheduleModule.forRoot(),
 
         TestingModule,
         NotificationsModule,
