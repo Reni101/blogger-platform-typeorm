@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Not, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Not, Repository } from 'typeorm';
 import { Game, GameStatus } from '../domain/game.entity';
 import { GameViewDto } from '../api/view-dto/game.view-dto';
 import { DomainException } from '../../../core/exceptions/domain-exceptions';
@@ -10,7 +10,6 @@ import { DomainExceptionCode } from '../../../core/exceptions/domain-exception-c
 export class GameQueryRepository {
     constructor(
         @InjectRepository(Game) private gamesRepository: Repository<Game>,
-        @InjectDataSource() private dataSource: DataSource,
     ) {}
 
     async getCurrentGameOrThrow(userId: number) {
@@ -34,7 +33,6 @@ export class GameQueryRepository {
         }
         return GameViewDto.mapToView(game);
     }
-
     async findGameByIdOrThrow(id: number) {
         const game = await this.gamesRepository.findOne({
             where: { id },

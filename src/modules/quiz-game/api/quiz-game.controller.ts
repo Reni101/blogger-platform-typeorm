@@ -20,13 +20,13 @@ import { ConnectionCommand } from '../application/use-cases/connection.use-case'
 import { AnswerDto } from './input-dto/question.input-dto';
 import { AnswerViewDto } from './view-dto/anser.view-dto';
 import { AnswerCommand } from '../application/use-cases/answer.use-case';
-import { AnswerQueryRepository } from '../infastructure/answer-query.repository';
+import { PlayerQueryRepository } from '../infastructure/player-query.repository';
 
 @Controller('pair-game-quiz')
 export class QuizGameController {
     constructor(
         private gameQueryRepository: GameQueryRepository,
-        private answerQueryRepository: AnswerQueryRepository,
+        private playerQueryRepository: PlayerQueryRepository,
         private commandBus: CommandBus,
     ) {}
 
@@ -37,6 +37,13 @@ export class QuizGameController {
         @ExtractUserFromRequest() user: UserContextDto,
     ) {
         return this.gameQueryRepository.getCurrentGameOrThrow(user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @Get('pairs/my-static')
+    async getUserStatic(@ExtractUserFromRequest() user: UserContextDto) {
+        return this.playerQueryRepository.getUserStatic(user.id);
     }
 
     @UseGuards(JwtAuthGuard)
@@ -91,10 +98,8 @@ export class QuizGameController {
         @ExtractUserFromRequest() user: UserContextDto,
         @Body() body: AnswerDto,
     ): Promise<AnswerViewDto> {
-        const answerId = await this.commandBus.execute<AnswerCommand, number>(
+        return this.commandBus.execute<AnswerCommand, AnswerViewDto>(
             new AnswerCommand({ answer: body.answer, userId: user.id }),
         );
-
-        return this.answerQueryRepository.getByIdOrThrow(answerId);
     }
 }

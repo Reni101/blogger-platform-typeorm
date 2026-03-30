@@ -21,6 +21,7 @@ import { GameQuestionRepository } from './infastructure/game-question.repository
 import { AnswersRepository } from './infastructure/answers.repository';
 import { AnswerUseCase } from './application/use-cases/answer.use-case';
 import { AnswerQueryRepository } from './infastructure/answer-query.repository';
+import { PlayerQueryRepository } from './infastructure/player-query.repository';
 
 const useCases = [
     CreateQuestionUseCase,
@@ -45,6 +46,7 @@ const entities = [Question, Answer, Game, Player, Question, GameQuestion];
         GameQuestionRepository,
         AnswersRepository,
         AnswerQueryRepository,
+        PlayerQueryRepository,
         ...useCases,
     ],
 })

@@ -8,6 +8,12 @@ import {
 import { Answer } from './answer.entity';
 import { User } from '../../user-accounts/domain/user.entity';
 
+export enum PlayerStatus {
+    Win = 'win',
+    Lose = 'lose',
+    Draw = 'draw',
+}
+
 @Entity({ name: 'players' })
 export class Player {
     @PrimaryGeneratedColumn()
@@ -24,4 +30,7 @@ export class Player {
 
     @Column({ type: 'int', default: 0 })
     score: number;
+
+    @Column({ type: 'text', nullable: true, default: null })
+    status: PlayerStatus | null;
 }

@@ -4,7 +4,10 @@ import { GameRepository } from '../../infastructure/game.repository';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
 import { AnswerStatus } from '../../domain/answer.entity';
+import { PlayerStatus } from '../../domain/player.entity';
 import { PlayerRepository } from '../../infastructure/player.repository';
+import { AnswerViewDto } from '../../api/view-dto/anser.view-dto';
+import { Game } from '../../domain/game.entity';
 
 export class AnswerCommand {
     constructor(public dto: { userId: number; answer: string }) {}
@@ -72,29 +75,52 @@ export class AnswerUseCase implements ICommandHandler<AnswerCommand> {
         const totalUserAnswers = userAnswers.length + 1;
 
         if (totalUserAnswers === 5) {
-            const opponent =
-                game.playerOne?.userId === dto.userId
-                    ? game.playerTwo!
-                    : game.playerOne!;
+            await this.finishGame(game, dto.userId);
+        }
+        return AnswerViewDto.mapToView(answer);
+    }
 
-            const opponentAnswers = await this.answersRepository.getUserAnswers(
-                opponent.userId,
-                game.id,
+    private async finishGame(game: Game, userId: number) {
+        const currentPlayer =
+            await this.playerRepository.findByUserIdOrThrow(userId);
+
+        const opponentUserId =
+            game.playerOne?.userId === userId
+                ? game.playerTwo?.userId
+                : game.playerOne!.userId;
+
+        const opponent = await this.playerRepository.findByUserIdOrThrow(
+            opponentUserId!,
+        );
+
+        const opponentAnswers = await this.answersRepository.getUserAnswers(
+            opponent.userId,
+            game.id,
+        );
+
+        if (opponentAnswers.length === 5) {
+            const hasCorrectAnswer = opponentAnswers.some(
+                (a) => a.status === AnswerStatus.Correct,
             );
 
-            if (opponentAnswers.length === 5) {
-                await this.gameRepository.finishGame(game.id);
-
-                const hasCorrectAnswer = opponentAnswers.some(
-                    (a) => a.status === AnswerStatus.Correct,
-                );
-
-                if (hasCorrectAnswer) {
-                    opponent.score += 1;
-                    await this.playerRepository.save(opponent);
-                }
+            if (hasCorrectAnswer) {
+                opponent.score += 1;
             }
+
+            if (currentPlayer.score > opponent.score) {
+                currentPlayer.status = PlayerStatus.Win;
+                opponent.status = PlayerStatus.Lose;
+            } else if (currentPlayer.score < opponent.score) {
+                currentPlayer.status = PlayerStatus.Lose;
+                opponent.status = PlayerStatus.Win;
+            } else {
+                currentPlayer.status = PlayerStatus.Draw;
+                opponent.status = PlayerStatus.Draw;
+            }
+
+            await this.playerRepository.save(currentPlayer);
+            await this.playerRepository.save(opponent);
+            await this.gameRepository.finishGame(game.id);
         }
-        return answer.id;
     }
 }
