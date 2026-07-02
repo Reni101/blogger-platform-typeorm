@@ -74,6 +74,8 @@ export class AuthController {
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,
+            // куки летают только на том же самом домене
+            sameSite: 'strict',
         });
 
         return { accessToken };

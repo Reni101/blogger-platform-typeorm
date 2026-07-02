@@ -27,6 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule';
                 url: config.getOrThrow<string>('PG_URL'),
                 autoLoadEntities: true,
                 synchronize: true,
+                logging: true,
             }),
         }),
         ScheduleModule.forRoot(),
