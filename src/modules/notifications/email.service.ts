@@ -10,7 +10,8 @@ export class EmailService {
 
         const html = `<h1>Thank for your registration</h1>
         <p>To finish registration please follow the link below:
-        <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+        // <a href='https://somesite.com/confirm-email?code=${code}'>registration code:{code}</a>
+        <div'>registration code:  ${code}</div>
         </p>`;
 
         await this.mailerService.sendMail({
@@ -25,7 +26,8 @@ export class EmailService {
 
         const html = `<h1>Comlite Registration</h1>
         <p>To finish registration please follow the link below:
-        <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+         // <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+        <div>registration code :{code}</div>
         </p>`;
 
         await this.mailerService.sendMail({
@@ -39,7 +41,8 @@ export class EmailService {
 
         const html = `<h1>Password recovery</h1>
         <p>To finish registration please follow the link below:
-        <a href='https://somesite.com/confirm-email?code=${code}'>complete password recovery</a>
+        // <a href='https://somesite.com/confirm-email?code=${code}'>complete password recovery</a>
+        <div>password recovery code ${code}</div>
         </p>`;
 
         await this.mailerService.sendMail({

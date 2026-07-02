@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsUUID, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
 import { Trim } from '../../../../core/decorators/transform/trim';
 import { passwordConstraints } from '../../domain/user.entity';
 
@@ -31,4 +31,11 @@ export class NewPasswordInputDto {
     @IsString()
     @IsUUID()
     recoveryCode: string;
+}
+
+export class LogoutInputDto {
+    @Trim()
+    @IsString()
+    @IsNotEmpty()
+    refreshToken: string;
 }
