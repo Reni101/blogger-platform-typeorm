@@ -28,4 +28,5 @@ export class MeInfo {
     id: string;
     login: string;
     email: string;
+    isEmailConfirm: boolean;
 }

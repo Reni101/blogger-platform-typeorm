@@ -25,8 +25,8 @@ describe('Auth - Login (e2e)', () => {
 
     const loginPath = '/api/auth/login';
     const validCredentials = {
-        loginOrEmail: 'maxim12',
-        password: 'maxim12',
+        loginOrEmail: 'maxim101',
+        password: 'renixx12',
     };
 
     it('should login successfully and return accessToken with refreshToken cookie', async () => {

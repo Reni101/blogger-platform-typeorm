@@ -105,7 +105,8 @@ export class AuthController {
         return;
     }
 
-    // @UseGuards(ThrottlerGuard)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Post('registration-confirmation')
     @HttpCode(HttpStatus.NO_CONTENT)
     async registrationConfirmation(
@@ -116,7 +117,8 @@ export class AuthController {
         );
     }
 
-    // @UseGuards(ThrottlerGuard)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @Post('registration-email-resending')
     @HttpCode(HttpStatus.NO_CONTENT)
     async registrationEmailResending(
@@ -150,14 +152,15 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('refresh-token')
     async refreshToken(
-        @ExtractRefreshTokenFromRequest() refreshToken: string | undefined,
+        // @ExtractRefreshTokenFromRequest() refreshToken: string | undefined,
         // @Res({ passthrough: true }) res: Response,
+        @Body() body: LogoutInputDto,
     ) {
         const { newAccessToken, newRefreshToken } =
             await this.commandBus.execute<
                 RefreshTokenCommand,
                 { newAccessToken: string; newRefreshToken: string }
-            >(new RefreshTokenCommand(refreshToken));
+            >(new RefreshTokenCommand(body.refreshToken));
 
         // res.cookie('refreshToken', newRefreshToken, {
         //     httpOnly: true,

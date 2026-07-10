@@ -37,8 +37,14 @@ export class UsersQueryRepository {
     }
     getUserById(id: number) {
         return this.usersRepository.findOne({
-            select: { id: true, email: true, login: true },
+            select: {
+                id: true,
+                email: true,
+                login: true,
+                emailConfirmation: { isConfirmed: true },
+            },
             where: { id },
+            relations: { emailConfirmation: true },
         });
     }
 }

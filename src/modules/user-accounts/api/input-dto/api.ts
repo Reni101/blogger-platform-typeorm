@@ -1,8 +1,8 @@
 export const loginApiSchema = {
     type: 'object',
     properties: {
-        loginOrEmail: { type: 'string', example: 'maxim12' },
-        password: { type: 'string', example: 'maxim12' },
+        loginOrEmail: { type: 'string', example: 'maxim101' },
+        password: { type: 'string', example: 'renixx12' },
     },
 };
 

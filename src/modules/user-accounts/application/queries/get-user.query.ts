@@ -23,6 +23,7 @@ export class GetUserQueryHandler implements IQueryHandler<GetUserQuery> {
             email: user.email,
             login: user.login,
             userId: user.id.toString(),
+            isEmailConfirm: user.emailConfirmation.isConfirmed,
         };
     }
 }

@@ -8,11 +8,11 @@ export class EmailService {
     async sendConfirmationEmail(email: string, code: string): Promise<void> {
         //can add html templates, implement advertising and other logic for mailing...
 
-        const html = `<h1>Thank for your registration</h1>
-        <p>To finish registration please follow the link below:
-        // <a href='https://somesite.com/confirm-email?code=${code}'>registration code:{code}</a>
-        <div'>registration code:  ${code}</div>
-        </p>`;
+        const html = `
+            <h1>Thanks for your registration</h1>
+            <p>To finish registration, use the code below:</p>
+            <p><strong>${code}</strong></p>
+        `;
 
         await this.mailerService.sendMail({
             html,
@@ -24,11 +24,11 @@ export class EmailService {
     async resendEmail(email: string, code: string): Promise<void> {
         //can add html templates, implement advertising and other logic for mailing...
 
-        const html = `<h1>Comlite Registration</h1>
-        <p>To finish registration please follow the link below:
-         // <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
-        <div>registration code :{code}</div>
-        </p>`;
+        const html = `
+            <h1>Complete Registration</h1>
+            <p>Your new confirmation code:</p>
+            <p><strong>${code}</strong></p>
+        `;
 
         await this.mailerService.sendMail({
             html,
@@ -37,13 +37,11 @@ export class EmailService {
         });
     }
     async passwordRecoveryEmail(email: string, code: string): Promise<void> {
-        //can add html templates, implement advertising and other logic for mailing...
-
-        const html = `<h1>Password recovery</h1>
-        <p>To finish registration please follow the link below:
-        // <a href='https://somesite.com/confirm-email?code=${code}'>complete password recovery</a>
-        <div>password recovery code ${code}</div>
-        </p>`;
+        const html = `
+            <h1>Password recovery</h1>
+            <p>Your password recovery code:</p>
+            <p><strong>${code}</strong></p>
+        `;
 
         await this.mailerService.sendMail({
             html,
