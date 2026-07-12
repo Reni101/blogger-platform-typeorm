@@ -5,6 +5,7 @@ import {
     HttpCode,
     HttpStatus,
     Post,
+    Res,
     UseGuards,
 } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
@@ -27,7 +28,6 @@ import { RegistrationCommand } from '../application/use-cases/auth/registration.
 import { ExtractRefreshTokenFromRequest } from '../guards/decorators/extract-refresh-token-from-request';
 import { LogoutCommand } from '../application/use-cases/auth/logout.use-case';
 import {
-    LogoutInputDto,
     NewPasswordInputDto,
     PasswordRecoveryInputDto,
     RegistrationConfirmationInputDto,
@@ -41,6 +41,7 @@ import { RefreshTokenCommand } from '../application/use-cases/auth/refresh-token
 import { JwtAuthGuard } from '../guards/bearer/jwt-auth.guard';
 import { MeInfo } from './view-dto/user.view-dto';
 import { GetUserQuery } from '../application/queries/get-user.query';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -57,7 +58,7 @@ export class AuthController {
     async login(
         @ExtractUserFromRequest() user: UserContextDto,
         @ExtractClientDataFromRequest() client: ClientContextDto,
-        // @Res({ passthrough: true }) res: Response,
+        @Res({ passthrough: true }) res: Response,
     ) {
         const { accessToken, refreshToken } = await this.commandBus.execute<
             LoginCommand,
@@ -70,12 +71,12 @@ export class AuthController {
             }),
         );
 
-        // res.cookie('refreshToken', refreshToken, {
-        //     httpOnly: true,
-        //     secure: true,
-        //     // куки летают только на том же самом домене
-        //     sameSite: 'strict',
-        // });
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            // куки летают только на том же самом домене
+            sameSite: 'strict',
+        });
 
         return { accessToken, refreshToken };
     }
@@ -93,15 +94,15 @@ export class AuthController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @Post('logout')
     async logout(
-        // @Res({ passthrough: true }) res: Response,
-        // @ExtractRefreshTokenFromRequest() refreshToken: string | undefined,
-        @Body() body: LogoutInputDto,
+        @Res({ passthrough: true }) res: Response,
+        @ExtractRefreshTokenFromRequest() refreshToken: string | undefined,
+        // @Body() body: LogoutInputDto,
     ) {
         await this.commandBus.execute<LogoutCommand, void>(
-            new LogoutCommand(body.refreshToken),
+            new LogoutCommand(refreshToken),
         );
 
-        // res.clearCookie('refreshToken', { path: '/' });
+        res.clearCookie('refreshToken', { path: '/' });
         return;
     }
 
@@ -152,20 +153,19 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('refresh-token')
     async refreshToken(
-        // @ExtractRefreshTokenFromRequest() refreshToken: string | undefined,
-        // @Res({ passthrough: true }) res: Response,
-        @Body() body: LogoutInputDto,
+        @ExtractRefreshTokenFromRequest() refreshToken: string | undefined,
+        @Res({ passthrough: true }) res: Response,
     ) {
         const { newAccessToken, newRefreshToken } =
             await this.commandBus.execute<
                 RefreshTokenCommand,
                 { newAccessToken: string; newRefreshToken: string }
-            >(new RefreshTokenCommand(body.refreshToken));
+            >(new RefreshTokenCommand(refreshToken));
 
-        // res.cookie('refreshToken', newRefreshToken, {
-        //     httpOnly: true,
-        //     secure: true,
-        // });
+        res.cookie('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+        });
         return { accessToken: newAccessToken, refreshToken: newRefreshToken };
     }
 
