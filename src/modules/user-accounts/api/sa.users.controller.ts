@@ -30,6 +30,7 @@ export class SaUsersController {
     ) {}
     @Post()
     async createUser(@Body() body: CreateUserInputDto) {
+        // commit for web
         return this.commandBus.execute<CreateUserCommand, UserViewDto>(
             new CreateUserCommand(body),
         );
