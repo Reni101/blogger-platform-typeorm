@@ -26,7 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
                 type: 'postgres',
                 url: config.getOrThrow<string>('PG_URL'),
                 autoLoadEntities: true,
-                synchronize: true,
+                synchronize: false,
                 // logging: true,
             }),
         }),
