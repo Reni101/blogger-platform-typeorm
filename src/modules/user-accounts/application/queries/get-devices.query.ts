@@ -1,6 +1,6 @@
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
 import { SessionsService } from '../sessions.service';
-import { SessionsQueryRepository } from '../../infastructure/sessions-query.repository';
+import { SessionsQueryRepository } from '../../infastructure/query/sessions-query.repository';
 import { DeviceViewDto } from '../../api/view-dto/devices.view-dto';
 
 export class GetDevicesQuery {
