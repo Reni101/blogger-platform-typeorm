@@ -12,7 +12,6 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.module';
 import { QuizGameModule } from './modules/quiz-game/quiz-game.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
     imports: [
@@ -29,12 +28,6 @@ import { MongooseModule } from '@nestjs/mongoose';
                 autoLoadEntities: true,
                 synchronize: false,
                 // logging: true,
-            }),
-        }),
-        MongooseModule.forRootAsync({
-            inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
-                uri: config.getOrThrow<string>('MONGO_URL'),
             }),
         }),
         ScheduleModule.forRoot(),

@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../domain/user.entity';
+import { User } from '../domain/user.entity';
 import { Repository } from 'typeorm';
-import { GetUsersQueryParams } from '../../api/input-dto/get-users-query-params.input-dto';
-import { SortDirection } from '../../../../core/dto/base.query-params.input-dto';
+import { GetUsersQueryParams } from '../api/input-dto/get-users-query-params.input-dto';
+import { SortDirection } from '../../../core/dto/base.query-params.input-dto';
 
 @Injectable()
 export class UsersQueryRepository {
