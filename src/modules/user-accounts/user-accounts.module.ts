@@ -21,11 +21,11 @@ import { SaUsersController } from './api/sa.users.controller';
 import { CreateUserUseCase } from './application/use-cases/admin/create-user.use-case';
 import { DeleteUserUseCase } from './application/use-cases/admin/delete-user.use-case';
 import { GetUsersQueryHandler } from './application/queries/get-users.query';
-import { UsersQueryRepository } from './infastructure/users-query.repository';
+import { UsersQueryRepository } from './infastructure/quey/users-query.repository';
 import { SecurityDevicesController } from './api/security-devices.controller';
 import { GetDevicesQueryHandler } from './application/queries/get-devices.query';
 import { SessionsService } from './application/sessions.service';
-import { SessionsQueryRepository } from './infastructure/sessions-query.repository';
+import { SessionsQueryRepository } from './infastructure/quey/sessions-query.repository';
 import { TerminateOtherDevicesUseCase } from './application/use-cases/security/terminate-other-devices.use-case';
 import { TerminateDeviceUseCase } from './application/use-cases/security/terminate-device.use-case';
 import { LogoutUseCase } from './application/use-cases/auth/logout.use-case';
@@ -39,6 +39,8 @@ import { GetUserQueryHandler } from './application/queries/get-user.query';
 import { UserController } from './api/user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAvatar, UserAvatarSchema } from './domain/user-avatar.schema';
+import { UploadPhotoUseCase } from './application/use-cases/user/upload-photo.use-case';
+import { UserAvatarRepository } from './infastructure/user-avatar.repository';
 
 const useCases = [
     LoginUseCase,
@@ -53,6 +55,7 @@ const useCases = [
     PasswordRecoveryUseCase,
     NewPasswordUseCase,
     RefreshTokenUseCase,
+    UploadPhotoUseCase,
 ];
 const queries = [
     GetUsersQueryHandler,
@@ -103,6 +106,8 @@ const queries = [
         UsersQueryRepository,
 
         EmailConfirmationRepository,
+
+        UserAvatarRepository,
     ],
     exports: [],
 })
