@@ -37,8 +37,10 @@ import { NewPasswordUseCase } from './application/use-cases/auth/new-password.us
 import { RefreshTokenUseCase } from './application/use-cases/auth/refresh-token.use-case';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SessionSchema, UserAvatar } from './domain/user-avatar.shema';
+import { UserAvatar, UserAvatarSchema } from './domain/user-avatar.shema';
 import { UserController } from './api/user.controller';
+import { UploadPhotoUseCase } from './application/use-cases/user/upload-photo.use-case';
+import { UserAvatarsRepository } from './infastructure/user-avatars.repository';
 
 const useCases = [
     LoginUseCase,
@@ -53,6 +55,7 @@ const useCases = [
     PasswordRecoveryUseCase,
     NewPasswordUseCase,
     RefreshTokenUseCase,
+    UploadPhotoUseCase,
 ];
 const queries = [
     GetUsersQueryHandler,
@@ -65,7 +68,7 @@ const queries = [
         NotificationsModule,
         TypeOrmModule.forFeature([User, EmailConfirmation, Session]),
         MongooseModule.forFeature([
-            { name: UserAvatar.name, schema: SessionSchema },
+            { name: UserAvatar.name, schema: UserAvatarSchema },
         ]),
         JwtModule.registerAsync({
             inject: [ConfigService],
@@ -101,6 +104,7 @@ const queries = [
         UsersService,
         UsersRepository,
         UsersQueryRepository,
+        UserAvatarsRepository,
 
         EmailConfirmationRepository,
     ],

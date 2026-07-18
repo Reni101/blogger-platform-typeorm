@@ -4,8 +4,9 @@ import { CreateUserAvatarDto } from './dto/create-user-avatar.domain.dto';
 
 @Schema({ timestamps: true })
 export class UserAvatar {
-    @Prop({ type: Number, required: true })
+    @Prop({ type: Number, required: true, unique: true })
     userId: number;
+
     @Prop({ type: String, required: true })
     file: string;
 
@@ -18,16 +19,15 @@ export class UserAvatar {
         userAvatar.file = dto.file;
         return userAvatar as UserAvatarDocument;
     }
-    //
-    // updateSession(dto: { iat: number; exp: number }) {
-    //     this.iat = dto.iat;
-    //     this.exp = dto.exp;
-    // }
+
+    updatePhoto(file: string) {
+        this.file = file;
+    }
 }
 
-export const SessionSchema = SchemaFactory.createForClass(UserAvatar);
+export const UserAvatarSchema = SchemaFactory.createForClass(UserAvatar);
 
-SessionSchema.loadClass(UserAvatar);
+UserAvatarSchema.loadClass(UserAvatar);
 
 export type UserAvatarDocument = HydratedDocument<UserAvatar>;
 
