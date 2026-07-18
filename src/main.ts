@@ -23,7 +23,7 @@ async function bootstrap() {
     const port = Number(process.env.PORT ?? 3000);
 
     await app.listen(port);
-    Logger.log(`🚀 Swagger on: http://localhost:${port}/swagger`);
+    Logger.log(`🚀 Swagger1 on: http://localhost:${port}/swagger`);
 }
 
 async function createServer(): Promise<serverless.Handler> {
