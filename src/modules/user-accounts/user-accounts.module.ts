@@ -37,8 +37,7 @@ import { NewPasswordUseCase } from './application/use-cases/auth/new-password.us
 import { RefreshTokenUseCase } from './application/use-cases/auth/refresh-token.use-case';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SessionSchema, UserAvatar } from './domain/user-avatar.shema';
-import { UserController } from './api/user.controller';
+import { SessionSchema, UserAvatar } from './domain/user-avatar.entity';
 
 const useCases = [
     LoginUseCase,
@@ -79,12 +78,7 @@ const queries = [
             }),
         }),
     ],
-    controllers: [
-        AuthController,
-        UserController,
-        SaUsersController,
-        SecurityDevicesController,
-    ],
+    controllers: [AuthController, SaUsersController, SecurityDevicesController],
     providers: [
         CryptoService,
         JwtStrategy,

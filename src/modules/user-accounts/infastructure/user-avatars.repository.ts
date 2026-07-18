@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserAvatar, UserAvatarModelType } from '../domain/user-avatar.shema';
+import { UserAvatar, UserAvatarModelType } from '../domain/user-avatar.entity';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
