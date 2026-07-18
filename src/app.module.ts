@@ -36,7 +36,6 @@ import { MongooseModule } from '@nestjs/mongoose';
             inject: [ConfigService],
             useFactory: (config: ConfigService) => ({
                 uri: config.getOrThrow<string>('MONGO_URL'),
-                dbName: 'blogger-platform',
             }),
         }),
         ScheduleModule.forRoot(),
