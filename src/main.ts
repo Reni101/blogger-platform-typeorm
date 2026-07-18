@@ -8,14 +8,21 @@ import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
-    appSetup(app); //глобальные настройки приложения
+    appSetup(app);
     app.enableCors();
     app.use(cookieParser());
     app.set('trust proxy', 1);
-    // git commit
-    const port = Number(process.env.PORT ?? 3000);
 
+    // Vercel expects an exported Express/Connect server (not app.listen alone)
+    if (process.env.VERCEL) {
+        await app.init();
+        return app.getHttpAdapter().getInstance();
+    }
+
+    const port = Number(process.env.PORT ?? 3000);
     await app.listen(port);
     Logger.log(`🚀 Swagger on: http://localhost:${port}/swagger`);
+    return app.getHttpAdapter().getInstance();
 }
-bootstrap();
+
+export default bootstrap();

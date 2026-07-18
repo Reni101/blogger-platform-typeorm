@@ -24,16 +24,18 @@ import { MongooseModule } from '@nestjs/mongoose';
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (config: ConfigService) => {
-                const isProduction =
-                    config.get<string>('NODE_ENV') === 'production';
+                const url = config.getOrThrow<string>('PG_URL');
+                // Neon / managed Postgres require SSL; node-pg often ignores sslmode in URL alone
+                const needsSsl =
+                    config.get<string>('NODE_ENV') === 'production' ||
+                    /sslmode=require|neon\.tech|supabase\.co/i.test(url);
 
                 return {
                     type: 'postgres' as const,
-                    url: config.getOrThrow<string>('PG_URL'),
+                    url,
                     autoLoadEntities: true,
                     synchronize: false,
-                    ssl: isProduction ? { rejectUnauthorized: false } : false,
-                    // logging: true,
+                    ssl: needsSsl ? { rejectUnauthorized: false } : false,
                 };
             },
         }),

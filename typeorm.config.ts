@@ -4,13 +4,16 @@ import { join } from 'path';
 
 config();
 
-const isProduction = process.env.NODE_ENV === 'production';
+const pgUrl = process.env.PG_URL ?? '';
+const needsSsl =
+    process.env.NODE_ENV === 'production' ||
+    /sslmode=require|neon\.tech|supabase\.co/i.test(pgUrl);
 
 export default new DataSource({
     url: process.env.PG_URL,
     type: 'postgres',
     synchronize: false,
-    ssl: isProduction ? { rejectUnauthorized: false } : false,
+    ssl: needsSsl ? { rejectUnauthorized: false } : false,
     migrations: [join(__dirname, 'migrations', '*.{ts,js}')],
     entities: [join(__dirname, 'src', '**', '*.entity.{ts,js}')],
 });
