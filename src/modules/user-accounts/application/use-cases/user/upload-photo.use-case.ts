@@ -3,7 +3,7 @@ import { DomainException } from '../../../../../core/exceptions/domain-exception
 import { DomainExceptionCode } from '../../../../../core/exceptions/domain-exception-codes';
 import { UserAvatarsRepository } from '../../../infastructure/user-avatars.repository';
 
-const MAX_PHOTO_SIZE_BYTES = 4 * 1024 * 1024; // 5MB
+const MAX_PHOTO_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 
 export class UploadPhotoCommand {
     constructor(public dto: { userId: number; file: Express.Multer.File }) {}
@@ -27,7 +27,7 @@ export class UploadPhotoUseCase implements ICommandHandler<UploadPhotoCommand> {
         if (file.size > MAX_PHOTO_SIZE_BYTES) {
             throw new DomainException({
                 code: DomainExceptionCode.BadRequest,
-                message: 'File size must not exceed 4MB',
+                message: 'File size must not exceed 5MB',
                 extensions: [
                     {
                         field: 'file',
