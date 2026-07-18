@@ -23,21 +23,13 @@ import { MongooseModule } from '@nestjs/mongoose';
         }),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
-            useFactory: (config: ConfigService) => {
-                const isProduction =
-                    config.get<string>('NODE_ENV') === 'production';
-
-                return {
-                    type: 'postgres' as const,
-                    url: config.getOrThrow<string>('PG_URL'),
-                    autoLoadEntities: true,
-                    synchronize: false,
-                    ssl: isProduction
-                        ? { rejectUnauthorized: false }
-                        : false,
-                    // logging: true,
-                };
-            },
+            useFactory: (config: ConfigService) => ({
+                type: 'postgres',
+                url: config.getOrThrow<string>('PG_URL'),
+                autoLoadEntities: true,
+                synchronize: false,
+                // logging: true,
+            }),
         }),
         MongooseModule.forRootAsync({
             inject: [ConfigService],
