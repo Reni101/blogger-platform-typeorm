@@ -12,6 +12,8 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { BlogPlatformModule } from './modules/blogers-platform/bloger-platform.module';
 import { QuizGameModule } from './modules/quiz-game/quiz-game.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import process from 'node:process';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
     imports: [
@@ -20,6 +22,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         ThrottlerModule.forRoot({
             throttlers: [{ limit: 5, ttl: 10000 }],
         }),
+        MongooseModule.forRoot(process.env.MONGO_URL ?? ''),
         TypeOrmModule.forRootAsync({
             inject: [ConfigService],
             useFactory: (config: ConfigService) => ({

@@ -36,6 +36,9 @@ import { PasswordRecoveryUseCase } from './application/use-cases/auth/password-r
 import { NewPasswordUseCase } from './application/use-cases/auth/new-password.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/auth/refresh-token.use-case';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
+import { UserController } from './api/user.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UserAvatar, UserAvatarSchema } from './domain/user-avatar.schema';
 
 const useCases = [
     LoginUseCase,
@@ -60,6 +63,9 @@ const queries = [
 @Module({
     imports: [
         NotificationsModule,
+        MongooseModule.forFeature([
+            { name: UserAvatar.name, schema: UserAvatarSchema },
+        ]),
         TypeOrmModule.forFeature([User, EmailConfirmation, Session]),
         JwtModule.registerAsync({
             inject: [ConfigService],
@@ -73,7 +79,12 @@ const queries = [
             }),
         }),
     ],
-    controllers: [AuthController, SaUsersController, SecurityDevicesController],
+    controllers: [
+        AuthController,
+        UserController,
+        SaUsersController,
+        SecurityDevicesController,
+    ],
     providers: [
         CryptoService,
         JwtStrategy,
