@@ -21,12 +21,12 @@ export class SessionsService {
         }
         const token = this.jwtService.decode<RefreshTokenPayload>(refreshToken);
         const session = await this.sessionsRepository.findOrThrow({
-            iat: token.iat.toString(),
+            iat: token.iat,
             deviceId: token.deviceId,
         });
         const currentTime = Math.floor(Date.now() / 1000);
         if (currentTime > +session.exp) {
-            await this.sessionsRepository.deleteSession(session.id);
+            await session.deleteOne();
             throw new DomainException({
                 message: 'refresh token is expired',
                 code: DomainExceptionCode.Unauthorized,

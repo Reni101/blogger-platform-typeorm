@@ -8,7 +8,6 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm';
 import { EmailConfirmation } from './email-confirmation.entity';
-import { Session } from './session.entity';
 import { Comment } from '../../blogers-platform/domain/comment.entity';
 import { CommentReaction } from '../../blogers-platform/domain/comment-reaction.entity';
 import { PostReaction } from '../../blogers-platform/domain/post-reaction.entity';
@@ -61,10 +60,10 @@ export class User {
     )
     emailConfirmation: EmailConfirmation;
 
-    @OneToMany(() => Session, (sessions) => sessions.user)
-    sessions: Session[];
+    // @OneToMany(() => Session, (sessions) => sessions.user)
+    // sessions: Session[];
 
-    @OneToMany(() => Session, (sessions) => sessions.user)
+    @OneToMany(() => Comment, (c) => c.user)
     comments: Comment[];
 
     @OneToMany(() => CommentReaction, (cr) => cr.user)

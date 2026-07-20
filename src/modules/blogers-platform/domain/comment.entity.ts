@@ -27,11 +27,13 @@ export class Comment {
 
     @ManyToOne(() => Post, (p) => p.comments)
     post: Post;
+
     @Column()
     postId: number;
 
     @ManyToOne(() => User, (u) => u.comments)
     user: User;
+
     @Column()
     userId: number;
 

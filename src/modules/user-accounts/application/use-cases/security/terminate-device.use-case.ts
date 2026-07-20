@@ -23,13 +23,13 @@ export class TerminateDeviceUseCase implements ICommandHandler<TerminateDeviceCo
         const sessionForDelete =
             await this.sessionsRepository.findByDeviceIdOrThrow(dto.deviceId);
 
-        if (+sessionForDelete.userId !== +currentSession.userId) {
+        if (+sessionForDelete.userId !== currentSession.userId) {
             throw new DomainException({
                 message: 'forbidden delete the session',
                 code: DomainExceptionCode.Forbidden,
             });
         }
 
-        await this.sessionsRepository.deleteSession(sessionForDelete.id);
+        await sessionForDelete.deleteOne();
     }
 }

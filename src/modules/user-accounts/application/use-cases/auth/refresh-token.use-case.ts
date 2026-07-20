@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsService } from '../../sessions.service';
-import { SessionsRepository } from '../../../infastructure/sessions.repository';
 import { JwtService } from '@nestjs/jwt';
-import { RefreshTokenPayload } from '../../dto/refresh-token-payload.dto';
 import { ConfigService } from '@nestjs/config';
-import type { StringValue } from 'ms';
+import { StringValue } from 'ms';
+import { RefreshTokenPayload } from '../../dto/refresh-token-payload.dto';
+import { SessionsRepository } from '../../../infastructure/sessions.repository';
 
 export class RefreshTokenCommand {
     constructor(public refreshToken?: string) {}
@@ -19,10 +19,7 @@ export class RefreshTokenUseCase implements ICommandHandler<RefreshTokenCommand>
         private jwtService: JwtService,
     ) {}
 
-    async execute({ refreshToken }: RefreshTokenCommand): Promise<{
-        newAccessToken: string;
-        newRefreshToken: string;
-    }> {
+    async execute({ refreshToken }: RefreshTokenCommand) {
         const session =
             await this.sessionsService.checkRefreshToken(refreshToken);
         const { deviceId, userId } = session;
@@ -42,8 +39,8 @@ export class RefreshTokenUseCase implements ICommandHandler<RefreshTokenCommand>
 
         const { iat, exp } =
             this.jwtService.decode<RefreshTokenPayload>(newRefreshToken);
-        session.iat = iat.toString();
-        session.exp = exp.toString();
+        session.iat = iat;
+        session.exp = exp;
         await this.sessionsRepository.save(session);
 
         return { newRefreshToken, newAccessToken };

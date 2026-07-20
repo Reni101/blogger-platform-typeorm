@@ -16,9 +16,9 @@ export class TerminateOtherDevicesUseCase implements ICommandHandler<TerminateOt
     async execute({ refreshToken }: TerminateOtherDevicesCommand) {
         const session =
             await this.sessionsService.checkRefreshToken(refreshToken);
-        await this.sessionsRepository.deleteOtherSessions({
-            userId: session.userId,
-            sessionId: session.id,
-        });
+        await this.sessionsRepository.deleteOtherSessions(
+            session.userId,
+            session._id,
+        );
     }
 }

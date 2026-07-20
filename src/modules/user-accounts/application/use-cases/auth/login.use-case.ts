@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { v4 } from 'uuid';
 import { ConfigService } from '@nestjs/config';
 import type { StringValue } from 'ms';
-import { SessionsRepository } from '../../../infastructure/sessions.repository';
 import { RefreshTokenPayload } from '../../dto/refresh-token-payload.dto';
+import { SessionsRepository } from '../../../infastructure/sessions.repository';
 
 export class LoginCommand {
     constructor(
@@ -35,7 +35,8 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
         );
         const { iat, exp } =
             this.jwtService.decode<RefreshTokenPayload>(refreshToken);
-        await this.sessionsRepository.createSession({
+
+        const session = this.sessionsRepository.createSession({
             userId,
             deviceName,
             ip,
@@ -43,6 +44,8 @@ export class LoginUseCase implements ICommandHandler<LoginCommand> {
             iat,
             exp,
         });
+
+        await this.sessionsRepository.save(session);
 
         return {
             accessToken,
