@@ -36,7 +36,7 @@ import { GetUserQueryHandler } from './application/queries/get-user.query';
 import { UserController } from './api/user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAvatar, UserAvatarSchema } from './domain/user-avatar.schema';
-import { UploadPhotoUseCase } from './application/use-cases/user/upload-photo.use-case';
+import { UploadAvatarUseCase } from './application/use-cases/user/upload-avatar.use-case';
 import { UserAvatarRepository } from './infastructure/user-avatar.repository';
 import { Session, SessionSchema } from './domain/session.schema';
 import { SessionsQueryRepository } from './infastructure/quey/sessions-query.repository';
@@ -55,7 +55,7 @@ const useCases = [
     PasswordRecoveryUseCase,
     NewPasswordUseCase,
     RefreshTokenUseCase,
-    UploadPhotoUseCase,
+    UploadAvatarUseCase,
 ];
 const queries = [
     GetUsersQueryHandler,

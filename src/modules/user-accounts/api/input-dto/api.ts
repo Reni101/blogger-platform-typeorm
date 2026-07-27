@@ -10,3 +10,14 @@ export const loginResSchema = {
     type: 'object',
     properties: { accessToken: { type: 'string' } },
 };
+
+export const uploadAvatarApiSchema = {
+    type: 'object',
+    properties: {
+        file: {
+            type: 'string',
+            format: 'binary',
+        },
+    },
+    required: ['file'],
+};

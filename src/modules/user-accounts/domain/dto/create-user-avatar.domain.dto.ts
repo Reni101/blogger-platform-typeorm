@@ -1,4 +1,5 @@
 export class CreateUserAvatarDomainDto {
     userId: number;
-    file: string;
+    file: Buffer;
+    fileName: string;
 }

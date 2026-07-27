@@ -6,8 +6,10 @@ import { CreateUserAvatarDomainDto } from './dto/create-user-avatar.domain.dto';
 export class UserAvatar {
     @Prop({ type: Number, required: true })
     userId: number;
+    @Prop({ type: Buffer, required: true })
+    file: Buffer;
     @Prop({ type: String, required: true })
-    file: string;
+    fileName: string;
 
     createdAt: Date;
     updatedAt: Date;
@@ -16,6 +18,7 @@ export class UserAvatar {
         const userAvatar = new this();
         userAvatar.userId = dto.userId;
         userAvatar.file = dto.file;
+        userAvatar.fileName = dto.fileName;
         return userAvatar as UserAvatarDocument;
     }
 }
