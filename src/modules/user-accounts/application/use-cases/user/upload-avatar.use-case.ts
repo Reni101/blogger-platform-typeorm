@@ -1,5 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserAvatarRepository } from '../../../infastructure/user-avatar.repository';
+import sharp from 'sharp';
 
 export class UploadAvatarCommand {
     constructor(public dto: { userId: number; file: Express.Multer.File }) {}
@@ -15,8 +16,15 @@ export class UploadAvatarUseCase implements ICommandHandler<UploadAvatarCommand>
         const existingAvatar =
             await this.userAvatarRepository.findByUserId(userId);
 
+        const buffer = await sharp(file.buffer)
+            .resize(300, 300, {
+                fit: 'inside',
+                withoutEnlargement: true,
+            })
+            .toBuffer();
+
         if (existingAvatar) {
-            existingAvatar.file = file.buffer;
+            existingAvatar.file = buffer;
             existingAvatar.fileName = file.originalname;
             existingAvatar.mimeType = file.mimetype;
             await this.userAvatarRepository.save(existingAvatar);
@@ -25,7 +33,7 @@ export class UploadAvatarUseCase implements ICommandHandler<UploadAvatarCommand>
 
         const avatar = this.userAvatarRepository.createAvatar({
             userId,
-            file: file.buffer,
+            file: buffer,
             fileName: file.originalname,
             mimeType: file.mimetype,
         });
