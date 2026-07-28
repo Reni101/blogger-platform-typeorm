@@ -26,6 +26,7 @@ export class UploadAvatarUseCase implements ICommandHandler<UploadAvatarCommand>
             userId,
             file: file.buffer,
             fileName: file.originalname,
+            mimeType: file.mimetype,
         });
 
         await this.userAvatarRepository.save(avatar);

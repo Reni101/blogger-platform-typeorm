@@ -10,6 +10,8 @@ export class UserAvatar {
     file: Buffer;
     @Prop({ type: String, required: true })
     fileName: string;
+    @Prop({ type: String, required: true })
+    mimeType: string;
 
     createdAt: Date;
     updatedAt: Date;
@@ -19,6 +21,7 @@ export class UserAvatar {
         userAvatar.userId = dto.userId;
         userAvatar.file = dto.file;
         userAvatar.fileName = dto.fileName;
+        userAvatar.mimeType = dto.mimeType;
         return userAvatar as UserAvatarDocument;
     }
 }

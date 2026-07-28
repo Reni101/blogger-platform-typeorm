@@ -16,6 +16,6 @@ export class GetUserAvatarQueryHandler implements IQueryHandler<GetUserAvatarQue
             return null;
         }
 
-        return avatar.file;
+        return avatar;
     }
 }

@@ -1,4 +1,11 @@
-import { Controller, Get, UploadedFile, UseGuards } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Res,
+    StreamableFile,
+    UploadedFile,
+    UseGuards,
+} from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { ExtractUserFromRequest } from '../guards/decorators/extract-user-from-request.decorator';
@@ -8,6 +15,8 @@ import { uploadAvatarFilePipe } from '../pipes/upload-avatar-file.pipe';
 import { UploadAvatar } from '../decorators/upload-avatar.decorator';
 import { JwtAuthGuard } from '../guards/bearer/jwt-auth.guard';
 import { GetUserAvatarQuery } from '../application/queries/get-user-avatar.query';
+import { Response } from 'express';
+import { UserAvatar } from '../domain/user-avatar.schema';
 
 @Controller('user')
 export class UserController {
@@ -19,10 +28,24 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @Get('avatar')
-    async getAvatar(@ExtractUserFromRequest() user: UserContextDto) {
-        return this.queryBus.execute<GetUserAvatarQuery, Buffer | null>(
-            new GetUserAvatarQuery(user.id),
-        );
+    async getAvatar(
+        @ExtractUserFromRequest() user: UserContextDto,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        const avatar = await this.queryBus.execute<
+            GetUserAvatarQuery,
+            UserAvatar | null
+        >(new GetUserAvatarQuery(user.id));
+
+        if (!avatar) {
+            return null;
+        }
+        res.set({
+            'Content-Type': avatar.mimeType,
+            'Cache-Control': 'private, max-age=3600',
+        });
+
+        return new StreamableFile(avatar.file);
     }
 
     @UploadAvatar()
