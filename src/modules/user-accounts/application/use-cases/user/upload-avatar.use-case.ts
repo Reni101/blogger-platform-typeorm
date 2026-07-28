@@ -18,6 +18,7 @@ export class UploadAvatarUseCase implements ICommandHandler<UploadAvatarCommand>
         if (existingAvatar) {
             existingAvatar.file = file.buffer;
             existingAvatar.fileName = file.originalname;
+            existingAvatar.mimeType = file.mimetype;
             await this.userAvatarRepository.save(existingAvatar);
             return;
         }
