@@ -33,6 +33,7 @@ import { PasswordRecoveryUseCase } from './application/use-cases/auth/password-r
 import { NewPasswordUseCase } from './application/use-cases/auth/new-password.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/auth/refresh-token.use-case';
 import { GetUserQueryHandler } from './application/queries/get-user.query';
+import { GetUserAvatarQueryHandler } from './application/queries/get-user-avatar.query';
 import { UserController } from './api/user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserAvatar, UserAvatarSchema } from './domain/user-avatar.schema';
@@ -61,6 +62,7 @@ const queries = [
     GetUsersQueryHandler,
     GetDevicesQueryHandler,
     GetUserQueryHandler,
+    GetUserAvatarQueryHandler,
 ];
 
 @Module({
